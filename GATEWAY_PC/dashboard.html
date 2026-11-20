@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ECOTAM | Sensores — Sprint 17.1</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/dashboard.js" defer></script>
+</head>
+<body>
+<div class="shell sensor-shell">
+  <header class="topbar">
+    <div><div class="wordmark">◈ ECOTAM <span>ENGINEERING</span></div><div class="meta">TELEMETRY SYSTEM / SPRINT 17.1</div></div>
+    <nav class="ec-nav" aria-label="Navegação"><a href="/" aria-current="page">Tempo real</a><a href="/historico">Histórico</a><a href="/qualidade">Qualidade</a></nav>
+    <div class="state"><span id="dot" class="dot"></span><span id="mode-label">Conectando…</span></div>
+  </header>
+  <section class="intro sensor-intro">
+    <div class="eyebrow">AQUISIÇÃO REAL • ESP-NOW • GATEWAY LOCAL</div>
+    <h1>Observabilidade dos sensores</h1>
+    <p>Gráficos individuais do BME280 e GPS NEO-6M. Somente leituras recebidas; campos ausentes permanecem sem dados.</p>
+    <div class="telemetry-meta">
+      <span id="protocol-label" class="meta-pill">Protocolo: —</span>
+      <span id="fresh-label" class="meta-pill">Aguardando amostras</span>
+      <span id="last-sample-time" class="meta-pill">Última leitura: —</span>
+      <label class="window-select" for="window-size">Janela: <select id="window-size"><option value="60">60 amostras</option><option value="120" selected>120 amostras</option><option value="240">240 amostras</option></select></label>
+    </div>
+  </section>
+  <section class="sensor-heading"><div><span class="eyebrow">SENSOR AMBIENTAL</span><h2>BME280</h2><p>Temperatura, pressão, umidade relativa e altitude calculada</p></div><span id="bme-status" class="sensor-status">Aguardando</span></section>
+  <section class="sensor-kpis" aria-label="Últimos valores BME280">
+    <div class="kpi sensor-kpi"><span>TEMPERATURA</span><strong id="temperature">—</strong><small>°C · leitura real</small></div>
+    <div class="kpi sensor-kpi"><span>PRESSÃO</span><strong id="pressure">—</strong><small>hPa · convertida de Pa</small></div>
+    <div class="kpi sensor-kpi"><span>UMIDADE</span><strong id="humidity">—</strong><small>% UR · somente V3</small></div>
+    <div class="kpi sensor-kpi"><span>ALTITUDE BAROMÉTRICA</span><strong id="altitude">—</strong><small>m · referência 1013,25 hPa</small></div>
+  </section>
+  <div class="sensor-chart-grid">
+    <section class="panel sensor-chart" aria-label="Temperatura ao longo do tempo"><div class="section-head"><div><h2>Temperatura</h2><p>Leitura BME280 · graus Celsius</p></div><span class="pill">°C</span></div><svg id="chart-temperature" viewBox="0 0 520 210" role="img" aria-label="Histórico recente da temperatura"></svg><p id="meta-temperature" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Pressão atmosférica</h2><p>Convertida de Pa para hPa</p></div><span class="pill">hPa</span></div><svg id="chart-pressure" viewBox="0 0 520 210" role="img" aria-label="Histórico recente da pressão"></svg><p id="meta-pressure" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Umidade relativa</h2><p>Disponível em pacotes V3</p></div><span class="pill">% UR</span></div><svg id="chart-humidity" viewBox="0 0 520 210" role="img" aria-label="Histórico recente da umidade"></svg><p id="meta-humidity" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Altitude barométrica</h2><p>Estimativa sensível à pressão de referência</p></div><span class="pill">m</span></div><svg id="chart-altitude" viewBox="0 0 520 210" role="img" aria-label="Histórico recente da altitude barométrica"></svg><p id="meta-altitude" class="chart-meta"></p></section>
+  </div>
+  <section class="sensor-heading gps-heading"><div><span class="eyebrow">POSICIONAMENTO</span><h2>GPS NEO-6M</h2><p>Coordenadas, altitude, satélites e disponibilidade de posição</p></div><span id="gps-status" class="sensor-status">Aguardando</span></section>
+  <section class="sensor-kpis" aria-label="Últimos valores GPS">
+    <div class="kpi sensor-kpi"><span>LATITUDE</span><strong id="latitude">—</strong><small>graus decimais</small></div>
+    <div class="kpi sensor-kpi"><span>LONGITUDE</span><strong id="longitude">—</strong><small>graus decimais</small></div>
+    <div class="kpi sensor-kpi"><span>ALTITUDE GPS</span><strong id="gps-altitude">—</strong><small>m · receptor GNSS</small></div>
+    <div class="kpi sensor-kpi"><span>SATÉLITES</span><strong id="satellites">—</strong><small>informação do pacote</small></div>
+  </section>
+  <div class="sensor-chart-grid">
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Latitude</h2><p>Posição válida · eixo em graus</p></div><span class="pill">°</span></div><svg id="chart-latitude" viewBox="0 0 520 210" role="img" aria-label="Latitude ao longo do tempo"></svg><p id="meta-latitude" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Longitude</h2><p>Posição válida · eixo em graus</p></div><span class="pill">°</span></div><svg id="chart-longitude" viewBox="0 0 520 210" role="img" aria-label="Longitude ao longo do tempo"></svg><p id="meta-longitude" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Altitude GPS</h2><p>Dados disponíveis apenas com fix válido</p></div><span class="pill">m</span></div><svg id="chart-gps-altitude" viewBox="0 0 520 210" role="img" aria-label="Altitude GPS ao longo do tempo"></svg><p id="meta-gps-altitude" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Satélites</h2><p>Quantidade reportada pelo receptor</p></div><span class="pill">nº</span></div><svg id="chart-satellites" viewBox="0 0 520 210" role="img" aria-label="Número de satélites ao longo do tempo"></svg><p id="meta-satellites" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Disponibilidade do fix GPS</h2><p>1 = posição válida, 0 = sem posição</p></div><span class="pill">0 / 1</span></div><svg id="chart-fix" viewBox="0 0 520 210" role="img" aria-label="Fix GPS ao longo do tempo"></svg><p id="meta-fix" class="chart-meta"></p></section>
+    <section class="panel sensor-chart"><div class="section-head"><div><h2>Trajetória local</h2><p>Latitude × longitude, sem mapas externos</p></div><span class="pill">2D</span></div><svg id="chart-track" viewBox="0 0 520 210" role="img" aria-label="Trajetória GPS 2D"></svg><p id="meta-track" class="chart-meta"></p></section>
+  </div>
+  <section class="pending-panel"><div><strong>Velocidade GPS</strong><p>O GPS fornece velocidade no firmware de leitura, mas o protocolo V3 de 84 bytes ainda não transmite esse campo. O gráfico será habilitado quando houver dados reais de velocidade no protocolo.</p></div><span>Não transmitida</span></section>
+  <section class="sensor-heading ops-heading"><div><span class="eyebrow">SISTEMA</span><h2>Gateway e armazenamento</h2><p>Monitoramento da recepção, gravações e configuração do InfluxDB</p></div></section>
+  <section class="ops-grid">
+    <div class="ops-stack">
+      <section class="panel"><div class="section-head"><div><h2>Recepção e persistência</h2><p>Contadores desta execução do gateway</p></div></div>
+        <div class="metrics"><div><span>Amostras locais</span><strong id="samples-total">0</strong></div><div><span>Gravadas no InfluxDB</span><strong id="influx-ok">0</strong></div><div><span>Falhas InfluxDB</span><strong id="influx-fail">0</strong></div></div>
+        <div class="metrics"><div><span>Frames RX</span><strong id="rx-frames">0</strong></div><div><span>Descartes da fila</span><strong id="queue-drops">0</strong></div><div><span>Última gravação</span><strong id="last-write">—</strong></div></div>
+        <p id="influx-status" class="note">Aguardando configuração.</p><p id="rx-live" class="fine" aria-live="polite">Aguardando RX…</p><p id="error-status" class="error"></p>
+      </section>
+      <section class="panel"><div class="section-head"><div><h2>Consulta InfluxDB</h2><p>Campos ambientais + GPS disponíveis</p></div></div><pre id="flux" class="flux-code"></pre><button class="secondary" id="copy-flux">Copiar consulta Flux</button></section>
+      <section class="panel"><div class="section-head"><div><h2>Campos ainda não instrumentados</h2><p>Zeros legados não são medições físicas</p></div></div><p class="fine">Bateria, aceleração X/Y/Z e giroscópio X/Y/Z permanecem reservados no protocolo. Não são apresentados como sensores reais enquanto não forem conectados e validados.</p></section>
+    </div>
+    <div class="ops-stack">
+      <section class="panel"><div class="section-head"><div><h2>Fonte de dados</h2><p>Comute sem reiniciar o gateway</p></div></div><label>Modo</label><select id="source-mode"><option value="rx">ESP32 RX por USB (COM3)</option><option value="sim">Simulação no computador</option></select><label>Porta serial RX</label><input id="source-port" value="COM3"><button id="source-apply" class="secondary">Aplicar fonte</button><p class="fine">Para gráficos dos sensores reais, selecione RX / COM3 e libere a porta do monitor serial.</p><p id="source-message" class="msg"></p></section>
+      <section class="panel"><div class="section-head"><div><h2>InfluxDB 2.x</h2><p>Conexão ao banco local</p></div></div><form id="influx-form" autocomplete="off"><label for="influx-url">Endereço</label><input id="influx-url" required value="http://127.0.0.1:8086"><label for="influx-org">Organização</label><input id="influx-org" required placeholder="sua organização"><label for="influx-bucket">Bucket</label><input id="influx-bucket" required placeholder="seu bucket"><label for="influx-token">Token de API</label><input id="influx-token" required type="password" placeholder="Token (não compartilhe)"><button type="submit" id="connect-button">Conectar ao InfluxDB</button></form><button id="disconnect-button" class="secondary">Desconectar</button><p class="fine">Token somente na memória do gateway; endereço restrito a localhost.</p><p id="connect-message" class="msg"></p></section>
+    </div>
+  </section>
+  <footer>ECOTAM • Sprint 17.1 • Dashboard restrito a 127.0.0.1 • Coordenadas GPS são informações privadas</footer>
+</div>
+</body>
+</html>
