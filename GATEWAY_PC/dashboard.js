@@ -1,8 +1,10 @@
 "use strict";
-/* ECOTAM — dashboard.js
-   1) EcoUI: núcleo visual compartilhado (formatação e gráficos SVG interativos).
+/* CANIDÉ — dashboard.js
+   1) Canide: identidade (arara vetorial) e moldura do aplicativo — sidebar,
+      topbar e barra de abas. Todas as páginas carregam este arquivo primeiro.
+   2) EcoUI: núcleo visual compartilhado (formatação e gráficos SVG interativos).
       historico.html também carrega este arquivo para reutilizar os gráficos.
-   2) Painel Tempo real: só executa quando <body data-page="live">.
+   3) Painel Tempo real: só executa quando <body data-page="live">.
    Cada gráfico monta seu esqueleto SVG uma única vez; a cada polling apenas
    atributos (d, cx, cy, textos) são alterados, sem reconstruir o SVG.
    Toda animação é disparada por dados: primeira série recebida, nova amostra. */
@@ -49,8 +51,8 @@ function nearestIndex(points, x) {
  return lo > 0 && Math.abs(points[lo - 1].x - x) <= Math.abs(points[lo].x - x) ? lo - 1 : lo;
 }
 const isMasked = () => document.body.classList.contains('mask-coords');
-/* Rampa de altitude na paleta: azul (baixa) → prata → laranja (alta). */
-const RAMP = [[0x5E, 0x9F, 0xC4], [0xD3, 0xDA, 0xE1], [0xD9, 0x78, 0x3F]];
+/* Rampa de altitude na paleta: azul (baixa) → turquesa → amarelo (alta). */
+const RAMP = [[0x61, 0xB2, 0xF6], [0x43, 0xCC, 0xDE], [0xF2, 0x9F, 0x05]];
 function rampColor(f) {
  const t = Math.max(0, Math.min(1, f)) * 2, i = Math.min(1, Math.floor(t)), k = t - i, a = RAMP[i], b = RAMP[i + 1];
  return '#' + a.map((c, j) => Math.round(c + (b[j] - c) * k).toString(16).padStart(2, '0')).join('');
@@ -59,6 +61,102 @@ function ping(node, scale = 3.4) {
  if (reduced() || !node.animate) return;
  node.animate([{transform: 'scale(1)', opacity: .85}, {transform: `scale(${scale})`, opacity: 0}], {duration: 950, easing: 'cubic-bezier(.22,1,.36,1)'});
 }
+function store(key, value) {
+ try { if (value === undefined) return localStorage.getItem(key); localStorage.setItem(key, value); } catch { /* armazenamento indisponível */ }
+ return null;
+}
+
+/* ---------- Identidade CANIDÉ: arara-canindé vetorial ----------
+   Geometria única (viewBox 0 0 240 320), espelhada em /marca/canide/arara.svg.
+   'full' = ilustração pousada no galho; 'mark' = recorte circular da cabeça. */
+const ARARA = '<path d="M104 186 L132 196 L78 316 Z" fill="#024E7F"/><path d="M112 190 L132 196 L96 300 Z" fill="#04ADBF"/><path d="M120 193 L134 198 L113 262 Z" fill="#F29F05"/>'
+ + '<path d="M126 60 C100 74 90 110 92 150 C94 178 104 196 120 206 L150 204 C146 160 150 120 168 96 Z" fill="#0367A6"/>'
+ + '<path d="M168 100 C186 120 186 168 164 204 L128 206 C138 170 144 130 160 104 Z" fill="#F29F05"/><path d="M176 128 C182 152 178 182 164 204 L150 205 C162 182 170 156 176 128Z" fill="#F28705"/>'
+ + '<path d="M124 92 C104 110 98 150 104 186 L92 240 C118 212 136 176 140 132 C142 112 136 98 124 92Z" fill="#024E7F"/><path d="M124 92 C134 100 140 114 140 132 C139 150 134 168 126 184 C130 160 130 120 124 92Z" fill="#035C94"/>'
+ + '<path d="M104 186 L92 240 L116 198Z" fill="#04ADBF"/><path d="M112 146 C118 168 116 192 104 214" fill="none" stroke="#04ADBF" stroke-width="1.6" stroke-opacity=".6"/>'
+ + '<path class="arara__feet" d="M140 204 l-6 18 M151 204 l2 18" stroke="#3A4650" stroke-width="5" stroke-linecap="round"/>'
+ + '<path d="M122 70 C124 42 146 26 170 30 C184 32 194 42 196 56 L176 104 C160 108 140 100 128 90 Z" fill="#0367A6"/><path d="M126 64 C130 44 146 32 166 31 L158 42 C144 45 134 54 126 64Z" fill="#1B83C4"/>'
+ + '<path d="M170 30 C184 32 194 42 196 56 L187 60 C183 48 176 40 163 34Z" fill="#95A94F"/>'
+ + '<path d="M158 54 C170 48 186 52 190 64 L188 98 C177 104 162 100 156 90 C150 80 150 62 158 54Z" fill="#F4F7F9"/>'
+ + '<path d="M161 80 q10 3.5 21 -.5 M163.5 86.5 q9.5 3 19.5 0 M167 93 q8 2.2 16 0" fill="none" stroke="#14161A" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2.2 1.6"/>'
+ + '<circle cx="171" cy="66" r="5.6" fill="#F6E7A6"/><circle cx="172" cy="66" r="3" fill="#0A0C0E"/><circle cx="173.2" cy="64.8" r=".9" fill="#FFFFFF"/>'
+ + '<path d="M168 102 C178 106 188 110 194 118 L186 126 C178 116 170 110 160 106Z" fill="#14161A"/>'
+ + '<path d="M188 92 L203 91 C207 99 207 109 201 118 C192 116 186 107 186 99 Z" fill="#2A2F36"/>'
+ + '<path d="M186 50 C202 43 222 51 227 71 C231 90 225 108 213 121 C214 107 210 97 202 91 L188 92 Z" fill="#14161A"/>'
+ + '<path d="M194 50 C208 48 220 56 224 70" fill="none" stroke="#3A414A" stroke-width="2" stroke-linecap="round"/>';
+const BRANCH = '<path d="M28 226 C80 220 150 222 228 214" fill="none" stroke="#5F7009" stroke-width="5" stroke-linecap="round"/><path d="M200 215 C206 203 217 198 228 199 C223 210 212 216 200 215Z" fill="#5F7009"/>';
+let araraSeq = 0;
+function araraMarkup(kind) {
+ if (kind === 'full') return `<svg class="arara arara--full" viewBox="0 0 240 320" aria-hidden="true" focusable="false">${BRANCH}${ARARA}</svg>`;
+ const clip = 'arara-clip' + (++araraSeq);
+ return `<svg class="arara arara--mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><defs><clipPath id="${clip}"><circle cx="24" cy="24" r="22"/></clipPath></defs>`
+  + `<circle class="arara__disc" cx="24" cy="24" r="22"/><g clip-path="url(#${clip})"><g transform="translate(-31 -2) scale(.29)">${ARARA}</g></g><circle class="arara__ring" cx="24" cy="24" r="22.6"/></svg>`;
+}
+function mountArara(root = document) { for (const el of root.querySelectorAll('[data-arara]')) if (!el.firstElementChild) el.innerHTML = araraMarkup(el.dataset.arara); }
+
+/* ---------- Moldura do aplicativo: sidebar, topbar e barra de abas ----------
+   Uma única definição de navegação para as três páginas. "sections" são as
+   âncoras de "Nesta página", destacadas conforme a rolagem. */
+const ICON = {
+ live: '<path d="M1.5 8.5h3l2-5 2.5 9 2-4h3.5"/>',
+ history: '<path d="M2.8 8a5.2 5.2 0 1 0 1.6-3.7M2.6 2.4v2.8h2.8M8 5.2V8l2.1 1.4"/>',
+ quality: '<path d="M8 1.8 13 3.6v4c0 3-2.2 5.3-5 6.6C5.2 12.9 3 10.6 3 7.6v-4ZM5.8 8l1.6 1.6 3-3.2"/>',
+ collapse: '<path d="M10 3.5 5.5 8l4.5 4.5"/>',
+ host: '<path d="M2.5 4.5h11v7h-11zM5.5 14h5M8 11.5V14"/>'
+};
+const icon = (name) => `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
+const NAV = [
+ {page: 'live', href: '/', label: 'Tempo real', sections: [['h-track', 'Trajetória'], ['bme-title', 'Atmosfera'], ['gps-title', 'GPS'], ['ops-title', 'Gateway e banco']]},
+ {page: 'history', href: '/historico', label: 'Histórico', sections: [['h-filters', 'Explorar registros'], ['h-compare', 'Comparar sessões'], ['h-table', 'Dados consultados']]},
+ {page: 'quality', href: '/qualidade', label: 'Qualidade', sections: [['h-filters', 'Auditoria'], ['h-score', 'Integridade'], ['h-sessions', 'Sessões'], ['h-events', 'Eventos']]}
+];
+function navLinks(page, withTitle) {
+ return NAV.map(n => `<li><a href="${n.href}"${n.page === page ? ' aria-current="page"' : ''}${withTitle ? ` title="${n.label}"` : ''}>${icon(n.page)}<span>${n.label}</span></a></li>`).join('');
+}
+function renderShell() {
+ const page = document.body.dataset.page, current = NAV.find(n => n.page === page) || NAV[0];
+ const side = document.querySelector('[data-shell="sidebar"]'), top = document.querySelector('[data-shell="topbar"]'), tabs = document.querySelector('[data-shell="tabbar"]');
+ if (side) side.innerHTML = `<a class="side-brand" href="/" aria-label="CANIDÉ — Telemetria e rastreamento, ir para Tempo real"><span class="side-brand__mark" data-arara="mark"></span><span class="side-brand__text"><span class="wordmark">CANIDÉ</span><span class="side-brand__tag">Telemetria &amp; rastreamento</span></span></a>`
+  + `<nav class="side-nav" aria-label="Navegação principal"><p class="side-label">Operação</p><ul>${navLinks(page, true)}</ul></nav>`
+  + `<nav class="side-sections" aria-label="Nesta página"><p class="side-label">Nesta página</p><ul>${current.sections.filter(([id]) => $(id)).map(([id, label]) => `<li><a href="#${id}" data-section="${id}">${label}</a></li>`).join('')}</ul></nav>`
+  + `<div class="side-foot"><p class="side-host" title="Gateway local">${icon('host')}<span>Gateway local · ${location.host || '127.0.0.1'}</span></p>`
+  + `<button type="button" class="side-collapse" aria-pressed="false">${icon('collapse')}<span>Recolher menu</span></button></div>`;
+ if (top) top.innerHTML = `<a class="top-brand" href="/" aria-label="CANIDÉ, ir para Tempo real"><span data-arara="mark"></span><span class="wordmark">CANIDÉ</span></a>`
+  + `<p class="top-title"><span class="top-crumb">CANIDÉ</span><span class="top-sep" aria-hidden="true">/</span><strong>${current.label}</strong></p>`
+  + '<div class="link-state" title="Estado da ligação com o gateway local"><span id="dot" class="dot" aria-hidden="true"></span><span id="mode-label">Conectando…</span></div>';
+ if (tabs) tabs.innerHTML = `<ul>${navLinks(page, false)}</ul>`;
+ mountArara();
+
+ // Recolher a sidebar: preferência deste navegador.
+ const collapse = side?.querySelector('.side-collapse');
+ const applyRail = (on) => { document.body.classList.toggle('side-rail', on); if (collapse) { collapse.setAttribute('aria-pressed', String(on)); collapse.setAttribute('aria-label', on ? 'Expandir menu lateral' : 'Recolher menu lateral'); } };
+ applyRail(store('canide.sidebar') === 'rail');
+ collapse?.addEventListener('click', () => { const on = !document.body.classList.contains('side-rail'); applyRail(on); store('canide.sidebar', on ? 'rail' : 'full'); });
+ requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('shell-ready')));
+
+ // "Nesta página": destaca a seção visível.
+ const links = side ? [...side.querySelectorAll('[data-section]')] : [];
+ if (links.length && 'IntersectionObserver' in window) {
+  // Observa o bloco que contém cada título; o link continua apontando para o título.
+  const blocks = new Map(links.map(a => { const h = $(a.dataset.section); return [h.closest('section, aside') || h, a]; }));
+  const visible = new Set();
+  const io = new IntersectionObserver(entries => {
+   for (const e of entries) e.isIntersecting ? visible.add(blocks.get(e.target)) : visible.delete(blocks.get(e.target));
+   const first = links.find(a => visible.has(a));
+   if (first) links.forEach(a => a.classList.toggle('is-current', a === first));
+  }, {rootMargin: '-15% 0px -55% 0px'});
+  for (const block of blocks.keys()) io.observe(block);
+ }
+ store('canide.visited.' + page, '1');
+}
+
+/* Saudação conforme o horário local do navegador. */
+function greeting(now = new Date()) {
+ const h = now.getHours(), hello = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+ return `${hello} · ${now.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'})}`;
+}
+renderShell();
+for (const el of document.querySelectorAll('[data-greeting]')) setText(el, greeting());
 
 /* ---------- Base interativa: tooltip, teclado, redimensionamento ---------- */
 let chartSeq = 0;
@@ -326,6 +424,9 @@ class TrackChart extends BaseChart {
   this.radar = svgEl('g', {class: 'radar', 'clip-path': clip}, s);
   this.radarRings = [1, 2, 3].map(() => svgEl('circle', {class: 'axis-ring'}, this.radar));
   const sweep = svgEl('g', {class: 'radar-sweep'}, this.radar);
+  // Arara no centro da varredura: o sistema "procura" a primeira posição válida.
+  this.radarBird = svgEl('g', {class: 'radar-bird'}, this.radar);
+  this.radarBird.innerHTML = ARARA;
   this.sweepLine = svgEl('line', null, sweep); this.sweepWedge = svgEl('path', null, sweep); this.sweep = sweep;
   this.gGrid = svgEl('g', {class: 'grid', 'clip-path': clip}, s);
   this.gRings = svgEl('g', {'clip-path': clip}, s);
@@ -371,6 +472,8 @@ class TrackChart extends BaseChart {
    setAttrs(this.sweepLine, {x1: mx, y1: my, x2: mx, y2: (my - rr).toFixed(1)});
    setAttr(this.sweepWedge, 'd', `M${mx} ${my}L${mx} ${my - rr}A${rr} ${rr} 0 0 0 ${(mx - rr * Math.sin(.6)).toFixed(1)} ${(my - rr * Math.cos(.6)).toFixed(1)}Z`);
    this.sweep.style.transformOrigin = `${mx}px ${my}px`;
+   const k = rr * .62 / 290;
+   setAttr(this.radarBird, 'transform', `translate(${(mx - 155 * k).toFixed(1)} ${(my - 171 * k).toFixed(1)}) scale(${k.toFixed(4)})`);
    setText(this.scaleText, ''); this.proj = []; this.drawn = false; this.lastKey = null; this.hideInspect(); return;
   }
 
@@ -410,7 +513,7 @@ class TrackChart extends BaseChart {
   const segs = sync(this.gSeg, Math.max(0, this.proj.length - 1), 'line', {class: 'track-seg'});
   for (let i = 1; i < this.proj.length; i++) {
    const a = this.proj[i - 1], b = this.proj[i], alt = (a.q.alt + b.q.alt) / 2;
-   setAttrs(segs[i - 1], {x1: a.px.toFixed(1), y1: a.py.toFixed(1), x2: b.px.toFixed(1), y2: b.py.toFixed(1), stroke: Number.isFinite(alt) ? rampColor((alt - aMin) / aSpan) : '#5E9FC4'});
+   setAttrs(segs[i - 1], {x1: a.px.toFixed(1), y1: a.py.toFixed(1), x2: b.px.toFixed(1), y2: b.py.toFixed(1), stroke: Number.isFinite(alt) ? rampColor((alt - aMin) / aSpan) : '#61B2F6'});
   }
   const dots = sync(this.gDots, this.proj.length, 'circle', {class: 'track-dot', r: 1.8});
   this.proj.forEach((o, i) => setAttrs(dots[i], {cx: o.px.toFixed(1), cy: o.py.toFixed(1)}));
@@ -443,9 +546,9 @@ class TrackChart extends BaseChart {
   this.cross.classList.remove('is-off');
   setAttrs(this.focus, {cx: X, cy: Y}); this.focus.classList.remove('is-off');
   const rows = [
-   {tone: 'blue', name: 'Latitude', value: masked ? 'oculto' : format(o.q.lat, 7) + '°'},
-   {tone: 'blue', name: 'Longitude', value: masked ? 'oculto' : format(o.q.lon, 7) + '°'},
-   {tone: 'silver', name: 'Distância de T0', value: format(Math.hypot(o.x, o.y), 1) + ' m'}];
+   {tone: 'teal', name: 'Latitude', value: masked ? 'oculto' : format(o.q.lat, 7) + '°'},
+   {tone: 'teal', name: 'Longitude', value: masked ? 'oculto' : format(o.q.lon, 7) + '°'},
+   {tone: 'neutral', name: 'Distância de T0', value: format(Math.hypot(o.x, o.y), 1) + ' m'}];
   if (Number.isFinite(o.q.alt)) rows.push({tone: 'orange', name: this.data.altName || 'Altitude', value: format(o.q.alt, 1) + ' m'});
   this.fillTip(`${fmtClock(o.q.t)} · ponto ${idx + 1}/${proj.length}`, rows, announce);
   this.placeTip(o.px, o.py, true);
@@ -454,6 +557,7 @@ class TrackChart extends BaseChart {
 }
 
 window.EcoUI = Object.freeze({LineChart, TrackChart, format, fmtClock, niceStep, stepDecimals, setText});
+window.Canide = Object.freeze({araraMarkup, mountArara, greeting});
 
 /* ======================================================================
    Painel Tempo real
@@ -463,13 +567,13 @@ if (document.body.dataset.page !== 'live') return;
 const DEF = [
  {id: 'temperature', key: 'temperature_c', decimal: 2, unit: '°C', name: 'Temperatura', tone: 'orange', tape: {}},
  {id: 'pressure', key: 'pressure_pa', calc: v => v / 100, decimal: 2, unit: 'hPa', name: 'Pressão', tone: 'blue', tape: {}},
- {id: 'humidity', key: 'humidity_pct', decimal: 2, unit: '% UR', name: 'Umidade', tone: 'blue', tape: {fixed: [0, 100]}},
- {id: 'altitude', key: 'altitude_m', decimal: 2, unit: 'm', name: 'Altitude barométrica', tone: 'silver', tape: {}},
- {id: 'latitude', key: 'latitude', decimal: 7, unit: '°', name: 'Latitude', tone: 'blue', fixOnly: true, sensitive: true},
- {id: 'longitude', key: 'longitude', decimal: 7, unit: '°', name: 'Longitude', tone: 'blue', fixOnly: true, sensitive: true},
- {id: 'gps-altitude', key: 'gps_altitude_m', decimal: 2, unit: 'm', name: 'Altitude GPS', tone: 'silver', fixOnly: true},
- {id: 'satellites', key: 'satellites', decimal: 0, unit: 'sat', name: 'Satélites', tone: 'orange', step: true, integer: true},
- {id: 'fix', key: 'gps_fix', decimal: 0, unit: '', name: 'Fix GPS', tone: 'orange', boolean: true, step: true}
+ {id: 'humidity', key: 'humidity_pct', decimal: 2, unit: '% UR', name: 'Umidade', tone: 'teal', tape: {fixed: [0, 100]}},
+ {id: 'altitude', key: 'altitude_m', decimal: 2, unit: 'm', name: 'Altitude barométrica', tone: 'olive', tape: {}},
+ {id: 'latitude', key: 'latitude', decimal: 7, unit: '°', name: 'Latitude', tone: 'teal', fixOnly: true, sensitive: true},
+ {id: 'longitude', key: 'longitude', decimal: 7, unit: '°', name: 'Longitude', tone: 'teal', fixOnly: true, sensitive: true},
+ {id: 'gps-altitude', key: 'gps_altitude_m', decimal: 2, unit: 'm', name: 'Altitude GPS', tone: 'olive', fixOnly: true},
+ {id: 'satellites', key: 'satellites', decimal: 0, unit: 'sat', name: 'Satélites', tone: 'blue', step: true, integer: true},
+ {id: 'fix', key: 'gps_fix', decimal: 0, unit: '', name: 'Fix GPS', tone: 'yellow', boolean: true, step: true}
 ];
 let initialized = false, previousBucket = 'SEU_BUCKET', pollBusy = false;
 const seen = {};
@@ -498,6 +602,15 @@ function stateClass(el, kind) { el.classList.toggle('state-ok', kind === 'ok'); 
 /* Lâmpada + texto de um subsistema; estados: ok, warn, err, wait, idle. */
 function system(name, state, text) { setAttr($('lamp-' + name), 'data-state', state); if (text !== undefined) { const el = $({gateway: 'gw-state', source: 'src-state', packets: 'packets-state', bme: 'bme-status', gps: 'gps-sys', csv: 'csv-state', db: 'db-state'}[name]); setText(el, text); stateClass(el, state); } }
 function boot(name, state) { setAttr($('boot-' + name), 'data-state', state); }
+/* Primeiros passos: aparece até ser dispensado; cada etapa reflete o estado real do gateway. */
+function guideStep(name, done) { const li = document.querySelector(`#guide [data-step="${name}"]`); if (li) setAttr(li, 'data-state', done ? 'done' : 'todo'); }
+if (store('canide.guide') !== 'done') $('guide').classList.remove('hidden');
+guideStep('history', store('canide.visited.history') === '1');
+$('guide-dismiss').addEventListener('click', () => {
+ const g = $('guide'); store('canide.guide', 'done');
+ if (reduced() || !g.animate) { g.classList.add('hidden'); return; }
+ g.classList.add('is-leaving'); g.addEventListener('animationend', () => g.classList.add('hidden'), {once: true});
+});
 function announce(key, value, text) { const known = key in seen; if (seen[key] === value) return; seen[key] = value; if (known) setText($('announcer'), text); }
 function updateFlux() { $('flux').textContent = `from(bucket: ${JSON.stringify(previousBucket)})\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == "ecotam_telemetry")\n  |> filter(fn: (r) => contains(value: r._field, set: [\n    "temperature_c", "pressure_pa", "humidity_pct",\n    "altitude_m", "latitude", "longitude",\n    "gps_altitude_m", "satellites", "gps_fix"]))`; }
 function message(id, txt, err = false) { const el = $(id); el.textContent = txt; el.classList.toggle('err', err); }
@@ -574,6 +687,7 @@ async function refresh() {
   setText($('packet-rate'), `${perMin} amostras/min`);
   system('packets', fresh ? 'ok' : age !== null ? 'warn' : 'wait', fresh ? `${perMin}/min · ${format(age, 1)} s` : age !== null ? `parado há ${Math.round(age)} s` : 'aguardando');
   boot('telemetry', fresh ? 'ok' : age !== null ? 'warn' : 'wait');
+  guideStep('source', fresh);
   setText($('last-sample-time'), last ? new Date(last.timestamp_ms).toLocaleTimeString('pt-BR') : '—');
   const version = last?.protocol_version;
   setText($('protocol-label'), version === 3 ? 'V3 / 84 B' : version === 2 ? 'V2 / 64 B' : state.source === 'sim' ? 'Simulador' : 'Aguardando');
@@ -581,7 +695,7 @@ async function refresh() {
   const bme = last && isFiniteNum(last.temperature_c) ? (fresh ? 'Recebendo' : 'Sem dados recentes') : 'Aguardando';
   system('bme', bme === 'Recebendo' ? 'ok' : bme === 'Aguardando' ? 'idle' : 'warn', bme);
   const gps = v3 ? (last?.gps_fix === true ? 'Fix válido' : last?.gps_fix === false ? 'Sem fix' : 'Aguardando') : 'Requer V3';
-  toneTag('gps-status', gps, gps === 'Fix válido' ? 'blue' : gps === 'Sem fix' ? 'orange' : '');
+  toneTag('gps-status', gps, gps === 'Fix válido' ? 'olive' : gps === 'Sem fix' ? 'yellow' : '');
   const gpsState = gps === 'Fix válido' ? 'ok' : gps === 'Sem fix' ? 'warn' : 'idle';
   system('gps', gpsState, gps === 'Fix válido' && isFiniteNum(last.satellites) ? `Fix · ${last.satellites} sat` : gps); boot('gps', gpsState);
   if (v3) announce('fix', gps, `GPS: ${gps}.`);
@@ -590,6 +704,7 @@ async function refresh() {
   const dbState = state.influx_error ? 'err' : state.influx_configured ? 'ok' : 'idle';
   system('db', dbState, state.influx_configured ? state.influx_status : 'Não configurado');
   boot('storage', state.csv_error ? 'err' : state.influx_error ? 'warn' : 'ok');
+  guideStep('influx', !!state.influx_configured && !state.influx_error);
 
   const n = samples.length, xTicks = timeTicks(samples), masked = isMasked();
   for (const def of DEF) {
@@ -646,10 +761,10 @@ function applyMask(on) {
  $('mask-coords').setAttribute('aria-pressed', String(on));
  $('mask-coords').lastChild.textContent = on ? 'Mostrar coordenadas' : 'Ocultar coordenadas';
 }
-try { applyMask(localStorage.getItem('ecotam.maskCoords') === '1'); } catch { applyMask(false); }
+applyMask(store('ecotam.maskCoords') === '1');
 $('mask-coords').addEventListener('click', () => {
  const on = !isMasked(); applyMask(on);
- try { localStorage.setItem('ecotam.maskCoords', on ? '1' : '0'); } catch { /* armazenamento indisponível */ }
+ store('ecotam.maskCoords', on ? '1' : '0');
  refresh();
 });
 

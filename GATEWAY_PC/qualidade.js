@@ -5,8 +5,8 @@ const fmtNum = n => typeof n === 'number' ? n.toLocaleString('pt-BR') : '—';
 const fmtDate = text => {const date = new Date(text); return Number.isNaN(+date) ? '—' : date.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});};
 function banner(msg, error=false, ok=false, busy=false){const x=node('quality-status');x.textContent=msg;x.classList.toggle('error',error);x.classList.toggle('ok',ok);x.classList.toggle('is-busy',busy);}
 function linkState(online,text){node('dot').classList.toggle('on',online);document.body.classList.toggle('is-offline',!online);node('mode-label').textContent=text;}
-// Categoria do evento: sequência (laranja), tempo (azul), campo/faixa (terracota).
-const EVENT_TONE={campo_ausente:'terra',faixa_basica:'terra',sequencia_ausente:'orange',sequencia_duplicada:'orange',sequencia_retrocesso:'orange',salto_sequencia:'orange',lacuna_temporal:'blue'};
+// Categoria do evento: sequência (laranja), tempo (turquesa), campo/faixa (vermelho funcional).
+const EVENT_TONE={campo_ausente:'danger',faixa_basica:'danger',sequencia_ausente:'orange',sequencia_duplicada:'orange',sequencia_retrocesso:'orange',salto_sequencia:'orange',lacuna_temporal:'teal'};
 function tagCell(text,tone,parent){const td=document.createElement('td'),tag=document.createElement('span');tag.className='tag'+(tone?' tag--'+tone:'');tag.textContent=text;td.appendChild(tag);parent.appendChild(td);return td;}
 function scoreRing(pct){const arc=node('q-score-arc'),v=typeof pct==='number'?Math.max(0,Math.min(100,pct)):0;arc.setAttribute('stroke-dasharray',`${v} ${100-v}`);arc.classList.toggle('is-warn',typeof pct==='number'&&pct<90);arc.classList.toggle('is-err',typeof pct==='number'&&pct<70);}
 function setText(id, text){node(id).textContent=text;}
@@ -42,7 +42,7 @@ async function analyze(){node('quality-run').disabled=true;setText('quality-run'
 }
 async function refreshRuntime(){try{const response=await fetch('/api/status',{cache:'no-store'});if(!response.ok)throw new Error('Gateway indisponível');const s=await response.json();linkState(true,s.influx_configured?'INFLUXDB • '+s.influx_bucket:'GATEWAY ONLINE');
  setText('q-write-ok',fmtNum(s.influx_writes));setText('q-write-fail',fmtNum(s.influx_failed));setText('q-queue',fmtNum(s.queue_drops));
- setText('q-runtime-status',s.influx_configured?'Influx configurado':'Influx desconectado');node('q-runtime-status').className='tag '+(s.influx_error?'tag--terra':s.influx_configured?'tag--blue':'tag--orange');
+ setText('q-runtime-status',s.influx_configured?'Influx configurado':'Influx desconectado');node('q-runtime-status').className='tag '+(s.influx_error?'tag--danger':s.influx_configured?'tag--olive':'tag--yellow');
  const issues=[s.csv_error,s.rx_error,s.influx_error].filter(Boolean);setText('q-runtime-detail',issues.join(' · ')||`Fonte: ${s.source==='sim'?'simulador':'RX USB'} · ${s.influx_status}`);
  return s;
  }catch(err){linkState(false,'Gateway desconectado');setText('q-runtime-status','Gateway indisponível');setText('q-runtime-detail',err.message);return null;}}
@@ -50,7 +50,7 @@ function exportReport(){if(!report){banner('Faça uma análise antes de exportar
  const columns=['time','session_key','kind','severity','field','detail'];
  const lines=[columns.join(','),...report.events.map(item=>columns.map(k=>safeCsv(item[k])).join(','))];
  const blob=new Blob(['\ufeff',lines.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'});
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='ECOTAM_Sprint13_alertas.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='CANIDE_qualidade_alertas.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
  banner(`Relatório exportado (${report.events.length} alertas da prévia). Os totais continuam disponíveis na tela.`,false,true);
 }
 async function init(){const now=new Date(),hour=new Date(now.valueOf()-3600000);const local=d=>new Date(d.valueOf()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);

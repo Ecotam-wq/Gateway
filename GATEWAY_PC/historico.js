@@ -1,5 +1,5 @@
 'use strict';
-/* Histórico: usa EcoUI.LineChart (definido em /dashboard.js, carregado antes). */
+/* CANIDÉ · Histórico: usa EcoUI.LineChart (definido em /dashboard.js, carregado antes). */
 const $ = id => document.getElementById(id);
 const META = {
  altitude_m:['Altitude BME280','m',2], pressure_pa:['Pressão','Pa',0], temperature_c:['Temperatura','°C',2],
@@ -74,7 +74,7 @@ async function queryHistory(){const button=$('load-history');button.disabled=tru
 function exportCsv(){if(!history||!history.rows.length){banner('Nenhum dado disponível para exportar. Consulte primeiro.',true);return;}
  const ids=[getSelection('a'),getSelection('b')].filter(Boolean),rows=history.rows.filter(x=>ids.includes(x.session_key));if(!rows.length){banner('Selecione pelo menos uma sessão.',true);return;}
  const headers=['time','session_key','source','device',...history.fields];const data=[headers.join(',')];for(const row of rows)data.push(headers.map(h=>escapeCsv(row[h])).join(','));
- const blob=new Blob(['﻿',data.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ECOTAM_historico_${new Date().toISOString().replaceAll(':','-').slice(0,19)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);banner(`CSV gerado com ${rows.length} pontos consultados das sessões selecionadas.`,false,true);
+ const blob=new Blob(['﻿',data.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`CANIDE_historico_${new Date().toISOString().replaceAll(':','-').slice(0,19)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);banner(`CSV gerado com ${rows.length} pontos consultados das sessões selecionadas.`,false,true);
 }
 async function startup(){const now=new Date(),oneHour=new Date(now.getTime()-3600000);const local=v=>{const date=new Date(v.getTime()-v.getTimezoneOffset()*60000);return date.toISOString().slice(0,16)};$('custom-start').value=local(oneHour);$('custom-stop').value=local(now);
  emptyGraph('Consulte o histórico para ver as sessões.');
