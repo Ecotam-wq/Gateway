@@ -3,10 +3,13 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="color-scheme" content="dark">
- <meta name="theme-color" content="#061420">
+ <meta name="color-scheme" content="light">
+ <meta name="theme-color" content="#FFFFFF">
  <title>CANIDÉ · Qualidade dos dados</title>
- <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3CclipPath id='k'%3E%3Ccircle cx='24' cy='24' r='22'/%3E%3C/clipPath%3E%3C/defs%3E%3Ccircle cx='24' cy='24' r='22' fill='%230B2A40'/%3E%3Cg clip-path='url(%23k)'%3E%3Cg transform='translate(-31 -2) scale(.29)'%3E%3Cpath d='M104 186 L132 196 L78 316 Z' fill='%23024E7F'/%3E %3Cpath d='M112 190 L132 196 L96 300 Z' fill='%2304ADBF'/%3E %3Cpath d='M120 193 L134 198 L113 262 Z' fill='%23F29F05'/%3E %3Cpath d='M126 60 C100 74 90 110 92 150 C94 178 104 196 120 206 L150 204 C146 160 150 120 168 96 Z' fill='%230367A6'/%3E %3Cpath d='M168 100 C186 120 186 168 164 204 L128 206 C138 170 144 130 160 104 Z' fill='%23F29F05'/%3E %3Cpath d='M176 128 C182 152 178 182 164 204 L150 205 C162 182 170 156 176 128Z' fill='%23F28705'/%3E %3Cpath d='M124 92 C104 110 98 150 104 186 L92 240 C118 212 136 176 140 132 C142 112 136 98 124 92Z' fill='%23024E7F'/%3E %3Cpath d='M124 92 C134 100 140 114 140 132 C139 150 134 168 126 184 C130 160 130 120 124 92Z' fill='%23035C94'/%3E %3Cpath d='M104 186 L92 240 L116 198Z' fill='%2304ADBF'/%3E %3Cpath d='M112 146 C118 168 116 192 104 214' fill='none' stroke='%2304ADBF' stroke-width='1.6' stroke-opacity='.6'/%3E %3Cpath d='M122 70 C124 42 146 26 170 30 C184 32 194 42 196 56 L176 104 C160 108 140 100 128 90 Z' fill='%230367A6'/%3E %3Cpath d='M126 64 C130 44 146 32 166 31 L158 42 C144 45 134 54 126 64Z' fill='%231B83C4'/%3E %3Cpath d='M170 30 C184 32 194 42 196 56 L187 60 C183 48 176 40 163 34Z' fill='%2395A94F'/%3E %3Cpath d='M158 54 C170 48 186 52 190 64 L188 98 C177 104 162 100 156 90 C150 80 150 62 158 54Z' fill='%23F4F7F9'/%3E %3Cpath d='M161 80 q10 3.5 21 -.5 M163.5 86.5 q9.5 3 19.5 0 M167 93 q8 2.2 16 0' fill='none' stroke='%2314161A' stroke-width='1.4' stroke-linecap='round' stroke-dasharray='2.2 1.6'/%3E %3Ccircle cx='171' cy='66' r='5.6' fill='%23F6E7A6'/%3E%3Ccircle cx='172' cy='66' r='3' fill='%230A0C0E'/%3E%3Ccircle cx='173.2' cy='64.8' r='.9' fill='%23FFFFFF'/%3E %3Cpath d='M168 102 C178 106 188 110 194 118 L186 126 C178 116 170 110 160 106Z' fill='%2314161A'/%3E %3Cpath d='M188 92 L203 91 C207 99 207 109 201 118 C192 116 186 107 186 99 Z' fill='%232A2F36'/%3E %3Cpath d='M186 50 C202 43 222 51 227 71 C231 90 225 108 213 121 C214 107 210 97 202 91 L188 92 Z' fill='%2314161A'/%3E %3Cpath d='M194 50 C208 48 220 56 224 70' fill='none' stroke='%233A414A' stroke-width='2' stroke-linecap='round'/%3E%3C/g%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='22.6' fill='none' stroke='%2304ADBF' stroke-width='1.2' stroke-opacity='.75'/%3E%3C/svg%3E">
+ <link rel="icon" href="/assets/brand/icons/08-favicon.svg" type="image/svg+xml">
+ <link rel="icon" href="/assets/brand/icons/favicon.ico" sizes="32x32">
+ <link rel="apple-touch-icon" href="/assets/brand/icons/07-avatar.png">
+ <link rel="preload" href="/assets/brand/fonts/OpenSans-Regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/assets/brand/fonts/OpenSans-Bold.woff" as="font" type="font/woff" crossorigin>
  <link rel="stylesheet" href="/dashboard.css">
  <script src="/dashboard.js" defer></script>
  <script src="/qualidade.js" defer></script>
@@ -18,30 +21,28 @@
 <div class="app-main">
 <header class="topbar" data-shell="topbar"></header>
 <main id="main" class="page">
- <section class="mission-hero reveal r1" aria-labelledby="page-title">
+ <section class="mission-hero" aria-labelledby="page-title">
   <div class="hero__copy">
-   <p class="eyebrow">Auditoria de aquisição</p>
-   <h1 id="page-title" class="mission-title">Qualidade dos <span>dados</span></h1>
-   <p class="mission-id"><b>CANIDÉ</b> · leitura dos registros brutos · sem médias</p>
-   <p class="lede"><strong>Qualidade de dados</strong> · identifique lacunas, duplicatas de sequência e campos ilegíveis nos registros do InfluxDB. Os registros podem conter dados reais ou simulados; alertas de qualidade não são diagnósticos de hardware.</p>
+   <h1 id="page-title" class="mission-title">Qualidade dos dados</h1>
+   <p class="lede">Encontre lacunas, sequências duplicadas e campos ilegíveis nos registros brutos do InfluxDB, sem médias. Um alerta de qualidade não é diagnóstico de hardware.</p>
   </div>
  </section>
- <div id="quality-status" class="banner reveal r2" role="status">Verificando a conexão ao gateway...</div>
+ <div id="quality-status" class="banner" role="status">Verificando a conexão com o gateway…</div>
 
- <section class="panel hud reveal r3" aria-labelledby="h-filters">
-  <header class="panel__head"><div><h2 id="h-filters">Auditoria de um período</h2><p>A consulta lê os registros originais, sem alterar o banco.</p></div><span class="tag tag--blue">InfluxDB 2.x · dados brutos</span></header>
+ <section class="panel hud" aria-labelledby="h-filters">
+  <header class="panel__head"><div><h2 id="h-filters">Auditoria de um período</h2><p>A consulta lê os registros originais, sem alterar o banco.</p></div></header>
   <div class="filters filters--quality">
    <div class="control"><label for="quality-period">Período</label><select id="quality-period"><option value="15m">Últimos 15 minutos</option><option value="1h" selected>Última 1 hora</option><option value="6h">Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="custom">Personalizado</option></select></div>
    <div class="control control-action"><button type="button" id="quality-run" class="btn">Analisar qualidade</button></div>
    <div class="control control-action"><button type="button" id="quality-export" class="btn btn--ghost">Exportar relatório CSV</button></div>
   </div>
-  <div id="quality-custom" class="custom-range hidden"><div class="control"><label for="quality-start">Início (hora local)</label><input type="datetime-local" id="quality-start"></div><div class="control"><label for="quality-stop">Fim (hora local)</label><input type="datetime-local" id="quality-stop"></div></div>
-  <p class="fine">A análise utiliza referência temporal aproximada de ~1 amostra/s; ajuste a interpretação à taxa efetiva de transmissão. Períodos longos podem exceder o limite seguro de consulta: nesse caso, selecione um período menor.</p>
+  <div id="quality-custom" class="custom-range hidden"><div class="control"><label for="quality-start">Início (hora local)</label><input type="datetime-local" id="quality-start" name="quality-start"></div><div class="control"><label for="quality-stop">Fim (hora local)</label><input type="datetime-local" id="quality-stop" name="quality-stop"></div></div>
+  <p class="fine">A análise considera cerca de 1 amostra por segundo. Leia os resultados de acordo com a taxa real de transmissão. Se o período exceder o limite da consulta, escolha um período menor.</p>
  </section>
 
- <div class="integrity reveal r4">
+ <div class="integrity">
   <section class="panel hud score-panel" aria-labelledby="h-score">
-   <header class="panel__head"><div><span class="eyebrow">Índice estimado</span><h2 id="h-score" class="deck-title">Integridade da amostragem</h2><p>Heurística orientativa, não taxa de entrega do rádio.</p></div></header>
+   <header class="panel__head"><div><h2 id="h-score" class="deck-title">Integridade da amostragem</h2><p>Índice estimado para comparar sessões. Não é a taxa de entrega do rádio.</p></div></header>
    <div class="score">
     <svg class="score__ring" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
      <circle class="score__track" cx="60" cy="60" r="50" pathLength="100"/>
@@ -58,7 +59,7 @@
   </section>
  </div>
 
- <section class="layout-2 reveal r5">
+ <section class="layout-2">
   <div class="panel">
    <header class="panel__head"><div><h2>Diagnóstico da amostragem</h2><p>Contadores deduzidos dos registros encontrados.</p></div></header>
    <div class="counters counters--2">
@@ -78,17 +79,17 @@
   </div>
  </section>
 
- <section class="panel reveal r6 section-tight" aria-labelledby="h-sessions">
+ <section class="panel section-tight" aria-labelledby="h-sessions">
   <header class="panel__head"><div><h2 id="h-sessions">Resumo por sessão</h2><p>As sessões do Sprint 11 podem ser inferidas; as do Sprint 12/13 usam identificador gravado no banco.</p></div></header>
-  <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Sessão</th><th scope="col">Início</th><th scope="col">Amostras</th><th scope="col">Com alerta</th><th scope="col">Lacunas</th><th scope="col">Ausências estimadas</th></tr></thead><tbody id="q-sessions"><tr><td colspan="6" class="empty-row">Aguardando auditoria...</td></tr></tbody></table></div>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Sessão</th><th scope="col">Início</th><th scope="col">Amostras</th><th scope="col">Com alerta</th><th scope="col">Lacunas</th><th scope="col">Ausências estimadas</th></tr></thead><tbody id="q-sessions"><tr><td colspan="6" class="empty-row">Nenhuma auditoria executada.</td></tr></tbody></table></div>
  </section>
- <section class="panel reveal r6 section-tight" aria-labelledby="h-events">
+ <section class="panel section-tight" aria-labelledby="h-events">
   <header class="panel__head"><div><h2 id="h-events">Eventos detectados</h2><p>Prévia de até 150 ocorrências; o CSV exporta essa mesma prévia e os totais aparecem acima.</p></div><span id="q-events-caption" class="tag">Sem análise</span></header>
   <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Horário</th><th scope="col">Categoria</th><th scope="col">Campo</th><th scope="col">Descrição</th></tr></thead><tbody id="q-events"><tr><td colspan="4" class="empty-row">Nenhum evento consultado.</td></tr></tbody></table></div>
  </section>
  <p class="disclaimer">Limites: lacunas anteriores à primeira amostra não são detectáveis. O InfluxDB pode consolidar gravações com chave e horário idênticos, impossibilitando observar algumas duplicatas. A análise não verifica calibração de sensores nem integridade física do enlace.</p>
 </main>
-<footer class="app-footer"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento</span><span>Auditoria somente leitura · sem conexão ao ESP-NOW obrigatória</span></footer>
+<footer class="app-footer"><span class="app-footer__brand"><img src="/assets/brand/logos/05-simbolo.svg" alt="" width="40" height="40"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento<em class="app-footer__slogan">Cabe outro olhar.</em></span></span><span>Auditoria somente leitura · sem conexão ao ESP-NOW obrigatória</span></footer>
 </div>
 </div>
 <nav class="tabbar" data-shell="tabbar" aria-label="Navegação principal"></nav>

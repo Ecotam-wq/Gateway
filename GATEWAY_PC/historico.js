@@ -63,11 +63,11 @@ function populateSelects(){const choices=history.sessions;
  }
 }
 function renderOverview(){if(!history)return;$('hist-count').textContent=history.rows.length.toLocaleString('pt-BR');$('hist-sessions').textContent=String(history.sessions.length);$('hist-window').textContent=history.resolution_s===1?'1 segundo':`${history.resolution_s}s`; $('hist-range').textContent=`${fmtDate(history.start)} a ${fmtDate(history.stop)}`;const mode=history.downsampled?'pontos agregados':'dados em resolução de 1s';$('query-detail').textContent=`Consultados ${history.rows.length} pontos (${mode}) no bucket configurado. A origem real ou simulada depende da coluna source.`;}
-async function queryHistory(){const button=$('load-history');button.disabled=true;button.textContent='Consultando...';banner('Consultando dados históricos no InfluxDB...',false,false,true);
+async function queryHistory(){const button=$('load-history');button.disabled=true;button.textContent='Consultando…';banner('Consultando dados históricos no InfluxDB…',false,false,true);
  try{
   const payload={period:$('period').value};if(payload.period==='custom'){const a=$('custom-start').value,b=$('custom-stop').value;if(!a||!b)throw new Error('Preencha as duas datas do período personalizado.');payload.start=new Date(a).toISOString();payload.stop=new Date(b).toISOString();}
   const result=await post('/api/history',payload);history=result;populateSelects();renderOverview();redraw();
-  banner(result.rows.length?`Consulta concluída: ${result.rows.length} pontos em ${result.sessions.length} sessão(ões).`:'Consulta concluída, mas não há dados nesse intervalo. Tente 24 horas ou 7 dias.',false,true);
+  banner(result.rows.length?`Consulta concluída: ${result.rows.length} pontos em ${result.sessions.length} ${result.sessions.length === 1 ? 'sessão' : 'sessões'}.`:'Não há dados nesse intervalo. Tente 24 horas ou 7 dias.',false,true);
  }catch(error){banner(error.message,true);$('query-detail').textContent='Se o banco foi reiniciado, conecte novamente em Tempo real.';}
  finally{button.disabled=false;button.textContent='Consultar histórico';}
 }

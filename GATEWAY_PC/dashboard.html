@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#061420">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#FFFFFF">
   <title>CANIDÉ · Tempo real</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3CclipPath id='k'%3E%3Ccircle cx='24' cy='24' r='22'/%3E%3C/clipPath%3E%3C/defs%3E%3Ccircle cx='24' cy='24' r='22' fill='%230B2A40'/%3E%3Cg clip-path='url(%23k)'%3E%3Cg transform='translate(-31 -2) scale(.29)'%3E%3Cpath d='M104 186 L132 196 L78 316 Z' fill='%23024E7F'/%3E %3Cpath d='M112 190 L132 196 L96 300 Z' fill='%2304ADBF'/%3E %3Cpath d='M120 193 L134 198 L113 262 Z' fill='%23F29F05'/%3E %3Cpath d='M126 60 C100 74 90 110 92 150 C94 178 104 196 120 206 L150 204 C146 160 150 120 168 96 Z' fill='%230367A6'/%3E %3Cpath d='M168 100 C186 120 186 168 164 204 L128 206 C138 170 144 130 160 104 Z' fill='%23F29F05'/%3E %3Cpath d='M176 128 C182 152 178 182 164 204 L150 205 C162 182 170 156 176 128Z' fill='%23F28705'/%3E %3Cpath d='M124 92 C104 110 98 150 104 186 L92 240 C118 212 136 176 140 132 C142 112 136 98 124 92Z' fill='%23024E7F'/%3E %3Cpath d='M124 92 C134 100 140 114 140 132 C139 150 134 168 126 184 C130 160 130 120 124 92Z' fill='%23035C94'/%3E %3Cpath d='M104 186 L92 240 L116 198Z' fill='%2304ADBF'/%3E %3Cpath d='M112 146 C118 168 116 192 104 214' fill='none' stroke='%2304ADBF' stroke-width='1.6' stroke-opacity='.6'/%3E %3Cpath d='M122 70 C124 42 146 26 170 30 C184 32 194 42 196 56 L176 104 C160 108 140 100 128 90 Z' fill='%230367A6'/%3E %3Cpath d='M126 64 C130 44 146 32 166 31 L158 42 C144 45 134 54 126 64Z' fill='%231B83C4'/%3E %3Cpath d='M170 30 C184 32 194 42 196 56 L187 60 C183 48 176 40 163 34Z' fill='%2395A94F'/%3E %3Cpath d='M158 54 C170 48 186 52 190 64 L188 98 C177 104 162 100 156 90 C150 80 150 62 158 54Z' fill='%23F4F7F9'/%3E %3Cpath d='M161 80 q10 3.5 21 -.5 M163.5 86.5 q9.5 3 19.5 0 M167 93 q8 2.2 16 0' fill='none' stroke='%2314161A' stroke-width='1.4' stroke-linecap='round' stroke-dasharray='2.2 1.6'/%3E %3Ccircle cx='171' cy='66' r='5.6' fill='%23F6E7A6'/%3E%3Ccircle cx='172' cy='66' r='3' fill='%230A0C0E'/%3E%3Ccircle cx='173.2' cy='64.8' r='.9' fill='%23FFFFFF'/%3E %3Cpath d='M168 102 C178 106 188 110 194 118 L186 126 C178 116 170 110 160 106Z' fill='%2314161A'/%3E %3Cpath d='M188 92 L203 91 C207 99 207 109 201 118 C192 116 186 107 186 99 Z' fill='%232A2F36'/%3E %3Cpath d='M186 50 C202 43 222 51 227 71 C231 90 225 108 213 121 C214 107 210 97 202 91 L188 92 Z' fill='%2314161A'/%3E %3Cpath d='M194 50 C208 48 220 56 224 70' fill='none' stroke='%233A414A' stroke-width='2' stroke-linecap='round'/%3E%3C/g%3E%3C/g%3E%3Ccircle cx='24' cy='24' r='22.6' fill='none' stroke='%2304ADBF' stroke-width='1.2' stroke-opacity='.75'/%3E%3C/svg%3E">
+  <link rel="icon" href="/assets/brand/icons/08-favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/brand/icons/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/brand/icons/07-avatar.png">
+ <link rel="preload" href="/assets/brand/fonts/OpenSans-Regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/assets/brand/fonts/OpenSans-Bold.woff" as="font" type="font/woff" crossorigin>
  <link rel="stylesheet" href="/dashboard.css">
   <script src="/dashboard.js" defer></script>
 </head>
@@ -18,12 +21,11 @@
 <header class="topbar" data-shell="topbar"></header>
 
 <main id="main" class="page">
-  <!-- Abertura: saudação, arara e sequência de inicialização ligada a estados reais. -->
-  <section class="hero reveal r1" aria-labelledby="mission-title">
+  <!-- Abertura: título, data e sequência de inicialização ligada a estados reais. -->
+  <section class="hero" aria-labelledby="mission-title">
     <div class="hero__copy">
-      <p class="eyebrow" data-greeting>Olá</p>
-      <h1 id="mission-title" class="mission-title">Central de <span>telemetria</span></h1>
-      <p class="mission-id"><b>CANIDÉ</b> · ESP-NOW · Gateway 127.0.0.1</p>
+      <h1 id="mission-title" class="mission-title">Central de telemetria</h1>
+      <p class="mission-id"><span data-greeting></span> · ESP-NOW · gateway local 127.0.0.1</p>
       <ol class="boot" aria-label="Sequência de inicialização">
         <li class="boot__step" id="boot-link" data-state="wait">Link gateway</li>
         <li class="boot__step" id="boot-source" data-state="idle">Fonte</li>
@@ -37,25 +39,25 @@
         <button type="button" id="mask-coords" class="btn btn--ghost" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Ocultar coordenadas</button>
       </div>
     </div>
-    <div class="hero__art" data-arara="full" aria-hidden="true"></div>
   </section>
 
   <!-- Primeiros passos: visível até ser dispensado; etapas marcadas pelo estado real. -->
-  <section id="guide" class="panel hud guide reveal r2 hidden" aria-labelledby="guide-title">
-    <span class="guide__bird" data-arara="mark"></span>
+  <section id="guide" class="panel hud guide hidden" aria-labelledby="guide-title">
+    <span class="guide__bird" data-brand="symbol" aria-hidden="true"></span>
     <div>
       <h2 id="guide-title">Bem-vindo à CANIDÉ</h2>
-      <p>Três passos para começar. Cada um é marcado sozinho quando o gateway confirma.</p>
+      <p class="guide__slogan">Cabe outro olhar.</p>
+      <p>Siga três passos. Cada um é marcado quando o gateway confirma.</p>
       <ol class="guide__steps">
-        <li data-step="source" data-state="todo"><a href="#source-panel"><b>Receba telemetria</b><span>ESP32 RX por USB ou simulação</span></a></li>
-        <li data-step="influx" data-state="todo"><a href="#influx-panel"><b>Conecte o InfluxDB</b><span>Organização, bucket e token</span></a></li>
-        <li data-step="history" data-state="todo"><a href="/historico"><b>Explore o histórico</b><span>Compare sessões gravadas</span></a></li>
+        <li data-step="source" data-state="todo"><a href="#source-panel"><svg class="guide__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle class="guide__todo" cx="8" cy="8" r="6.25"/><path class="guide__done" d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg><b>Receba telemetria</b><span>ESP32 RX por USB ou simulação</span></a></li>
+        <li data-step="influx" data-state="todo"><a href="#influx-panel"><svg class="guide__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle class="guide__todo" cx="8" cy="8" r="6.25"/><path class="guide__done" d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg><b>Conecte o InfluxDB</b><span>Organização, bucket e token</span></a></li>
+        <li data-step="history" data-state="todo"><a href="/historico"><svg class="guide__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle class="guide__todo" cx="8" cy="8" r="6.25"/><path class="guide__done" d="M3.5 8.5 6.5 11.5 12.5 4.5"/></svg><b>Explore o histórico</b><span>Compare sessões gravadas</span></a></li>
       </ol>
     </div>
     <button type="button" id="guide-dismiss" class="btn btn--ghost">Entendi</button>
   </section>
 
-  <dl class="panel mission-bar reveal r2" aria-label="Estado da missão">
+  <dl class="panel mission-bar" aria-label="Estado da missão">
     <div class="status-cell"><dt>Sessão</dt><dd id="session-state" class="mono">—</dd></div>
     <div class="status-cell"><dt>Fluxo</dt><dd id="fresh-label">Aguardando amostras</dd></div>
     <div class="status-cell"><dt>Protocolo</dt><dd id="protocol-label" class="mono">—</dd></div>
@@ -68,9 +70,9 @@
 
   <!-- Deck principal: trajetória protagonista + subsistemas. -->
   <div class="deck">
-    <section class="panel hud track-panel reveal r3" aria-labelledby="h-track">
+    <section class="panel hud track-panel" aria-labelledby="h-track">
       <header class="panel__head">
-        <div><span class="eyebrow">Trajetória · GPS NEO-6M</span><h2 id="h-track" class="deck-title">Plano de voo local</h2><p>Plano XY em metros a partir da primeira posição válida da janela. Sem mapas externos.</p></div>
+        <div><h2 id="h-track" class="deck-title">Plano de voo local</h2><p>Posições do GPS NEO-6M em metros, a partir da primeira posição válida da janela. Sem mapas externos.</p></div>
         <span id="gps-status" class="tag">Aguardando</span>
       </header>
       <div class="chart-frame" data-sensitive><svg id="chart-track" class="chart chart--track" viewBox="0 0 900 520" role="img" aria-label="Trajetória GPS 2D"></svg></div>
@@ -79,7 +81,7 @@
         <div class="legend" aria-hidden="true">
           <span><i class="legend-dot tone-neutral"></i>T0 · início</span>
           <span><i class="legend-dot tone-orange"></i>Posição atual</span>
-          <span class="alt-legend"><span id="alt-min" class="mono">—</span><i class="alt-ramp"></i><span id="alt-max" class="mono">—</span><span id="alt-source">altitude</span></span>
+          <span class="alt-legend"><span id="alt-min" class="mono">—</span><i class="alt-ramp"><b></b><b></b><b></b></i><span id="alt-max" class="mono">—</span><span id="alt-source">altitude</span></span>
         </div>
       </div>
       <div class="track-hud" aria-label="Últimos valores GPS">
@@ -91,8 +93,8 @@
       </div>
     </section>
 
-    <aside class="panel hud systems reveal r4" aria-labelledby="h-systems">
-      <header class="panel__head"><div><span class="eyebrow">Subsistemas</span><h2 id="h-systems" class="deck-title">Estado do sistema</h2><p>Lâmpadas derivadas do <span class="mono">/api/status</span>, nunca simuladas.</p></div></header>
+    <aside class="panel hud systems" aria-labelledby="h-systems">
+      <header class="panel__head"><div><h2 id="h-systems" class="deck-title">Estado do sistema</h2><p>Cada estado vem do <code>/api/status</code> do gateway.</p></div></header>
       <ul class="sys-list">
         <li class="sys"><span class="lamp" id="lamp-gateway" data-state="wait"></span><span class="sys__name">Gateway</span><span class="sys__value" id="gw-state">Conectando…</span></li>
         <li class="sys"><span class="lamp" id="lamp-source" data-state="idle"></span><span class="sys__name">Fonte</span><a class="sys__value" href="#source-panel" id="src-state">—</a></li>
@@ -110,7 +112,7 @@
     </aside>
   </div>
 
-  <section class="section reveal r5" aria-labelledby="bme-title">
+  <section class="section" aria-labelledby="bme-title">
     <div class="section-title">
       <div class="section-title__id"><div><h2 id="bme-title">BME280 · atmosfera</h2><p>Cada canal mostra a curva da janela e um instrumento de fita com o valor atual entre o mínimo e o máximo observados.</p></div></div>
     </div>
@@ -126,7 +128,7 @@
         <p id="meta-pressure" class="chart-meta"></p>
       </article>
       <article class="panel hud chart-panel channel tone-teal" aria-labelledby="h-humidity">
-        <header class="channel__head"><div><h3 id="h-humidity">Umidade relativa</h3><p>Somente pacotes V3 · fita em escala absoluta 0–100 %</p></div><strong class="channel__value"><span id="humidity">—</span><span class="readout__unit">% UR</span></strong></header>
+        <header class="channel__head"><div><h3 id="h-humidity">Umidade relativa</h3><p>Somente pacotes V3 · fita em escala fixa de 0 a 100 %</p></div><strong class="channel__value"><span id="humidity">—</span><span class="readout__unit">% UR</span></strong></header>
         <div class="chart-frame"><svg id="chart-humidity" class="chart" viewBox="0 0 640 240" role="img" aria-label="Histórico recente da umidade"></svg></div>
         <p id="meta-humidity" class="chart-meta"></p>
       </article>
@@ -138,60 +140,66 @@
     </div>
   </section>
 
-  <section class="section reveal r6" aria-labelledby="gps-title">
+  <section class="section" aria-labelledby="gps-title">
     <div class="section-title">
       <div class="section-title__id"><div><h2 id="gps-title">GPS · séries temporais</h2><p>Coordenadas e altitude existem apenas com fix válido; nenhuma posição é interpolada.</p></div></div>
     </div>
     <div class="chart-grid chart-grid--gps">
       <article class="panel chart-panel channel tone-teal" aria-labelledby="h-latitude">
-        <header class="panel__head"><div><h3 id="h-latitude">Latitude</h3><p>Graus decimais</p></div><span class="tag tag--teal">°</span></header>
+        <header class="panel__head"><div><h3 id="h-latitude">Latitude</h3><p>Graus decimais</p></div></header>
         <div class="chart-frame" data-sensitive><svg id="chart-latitude" class="chart" viewBox="0 0 640 200" role="img" aria-label="Latitude ao longo do tempo"></svg></div>
         <p id="meta-latitude" class="chart-meta"></p>
       </article>
       <article class="panel chart-panel channel tone-teal" aria-labelledby="h-longitude">
-        <header class="panel__head"><div><h3 id="h-longitude">Longitude</h3><p>Graus decimais</p></div><span class="tag tag--teal">°</span></header>
+        <header class="panel__head"><div><h3 id="h-longitude">Longitude</h3><p>Graus decimais</p></div></header>
         <div class="chart-frame" data-sensitive><svg id="chart-longitude" class="chart" viewBox="0 0 640 200" role="img" aria-label="Longitude ao longo do tempo"></svg></div>
         <p id="meta-longitude" class="chart-meta"></p>
       </article>
       <article class="panel chart-panel channel tone-olive" aria-labelledby="h-gps-altitude">
-        <header class="panel__head"><div><h3 id="h-gps-altitude">Altitude GPS</h3><p>Receptor GNSS</p></div><span class="tag tag--olive">m</span></header>
+        <header class="panel__head"><div><h3 id="h-gps-altitude">Altitude GPS</h3><p>Receptor GNSS</p></div></header>
         <div class="chart-frame"><svg id="chart-gps-altitude" class="chart" viewBox="0 0 640 200" role="img" aria-label="Altitude GPS ao longo do tempo"></svg></div>
         <p id="meta-gps-altitude" class="chart-meta"></p>
       </article>
       <article class="panel chart-panel channel tone-blue" aria-labelledby="h-satellites">
-        <header class="panel__head"><div><h3 id="h-satellites">Satélites</h3><p>Quantidade reportada pelo receptor</p></div><span class="tag tag--blue">nº</span></header>
+        <header class="panel__head"><div><h3 id="h-satellites">Satélites</h3><p>Quantidade reportada pelo receptor</p></div></header>
         <div class="chart-frame"><svg id="chart-satellites" class="chart" viewBox="0 0 640 200" role="img" aria-label="Número de satélites ao longo do tempo"></svg></div>
         <p id="meta-satellites" class="chart-meta"></p>
       </article>
       <article class="panel chart-panel channel tone-yellow span-all" aria-labelledby="h-fix">
-        <header class="panel__head"><div><h3 id="h-fix">Disponibilidade do fix GPS</h3><p>1 = posição válida · 0 = sem posição</p></div><span class="tag tag--yellow">0 / 1</span></header>
+        <header class="panel__head"><div><h3 id="h-fix">Disponibilidade do fix GPS</h3><p>1 = posição válida · 0 = sem posição</p></div></header>
         <div class="chart-frame"><svg id="chart-fix" class="chart chart--fix" viewBox="0 0 1280 120" role="img" aria-label="Fix GPS ao longo do tempo"></svg></div>
         <p id="meta-fix" class="chart-meta"></p>
       </article>
     </div>
-    <div class="pending-note"><p><strong>Velocidade GPS</strong>O firmware de leitura obtém a velocidade, mas o protocolo V3 de 84 bytes ainda não a transmite. O gráfico será habilitado quando houver dados reais de velocidade no protocolo.</p><span class="tag tag--yellow">Não transmitida</span></div>
+    <div class="pending-note"><p><strong>Velocidade GPS</strong>O firmware de leitura obtém a velocidade, mas o protocolo V3 de 84 bytes ainda não a transmite. O gráfico será habilitado quando houver dados reais de velocidade no protocolo.</p><span class="tag">Não transmitida</span></div>
   </section>
 
-  <section class="section reveal r6" aria-labelledby="ops-title">
+  <section class="section" aria-labelledby="ops-title">
     <div class="section-title">
       <div class="section-title__id"><div><h2 id="ops-title">Gateway e armazenamento</h2><p>Recepção, persistência, fonte de dados e conexão com o InfluxDB</p></div></div>
     </div>
     <div class="ops-grid">
+      <div class="ops-col">
       <section class="panel" id="source-panel" aria-labelledby="h-source">
         <header class="panel__head"><div><h3 id="h-source">Fonte de dados</h3><p>Comute sem reiniciar o gateway</p></div></header>
         <div class="field"><label for="source-mode">Modo</label><select id="source-mode" class="input"><option value="rx">ESP32 RX por USB (COM3)</option><option value="sim">Simulação no computador</option></select></div>
-        <div class="field"><label for="source-port">Porta serial RX</label><input id="source-port" class="input mono" value="COM3" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label for="source-port">Porta serial RX</label><input id="source-port" name="source-port" class="input mono" value="COM3" autocomplete="off" spellcheck="false"></div>
         <button type="button" id="source-apply" class="btn btn--ghost btn--block">Aplicar fonte</button>
         <p class="fine">Para os sensores reais, selecione RX / COM3 e feche o monitor serial que estiver usando a porta.</p>
         <p id="source-message" class="msg" role="status"></p>
       </section>
+      <section class="panel" aria-labelledby="h-reserved">
+        <header class="panel__head"><div><h3 id="h-reserved">Campos ainda não instrumentados</h3><p>Zeros legados não são medições físicas.</p></div><span class="tag">Reservado</span></header>
+        <p class="note">Bateria, aceleração X/Y/Z e giroscópio X/Y/Z permanecem reservados no protocolo. Não são apresentados como sensores reais enquanto não forem conectados e validados.</p>
+      </section>
+      </div>
       <section class="panel" id="influx-panel" aria-labelledby="h-influx">
         <header class="panel__head"><div><h3 id="h-influx">InfluxDB 2.x</h3><p>Conexão ao banco local</p></div></header>
         <form id="influx-form" autocomplete="off">
-          <div class="field"><label for="influx-url">Endereço</label><input id="influx-url" class="input mono" required value="http://127.0.0.1:8086" spellcheck="false"></div>
-          <div class="field"><label for="influx-org">Organização</label><input id="influx-org" class="input" required placeholder="sua organização"></div>
-          <div class="field"><label for="influx-bucket">Bucket</label><input id="influx-bucket" class="input" required placeholder="seu bucket"></div>
-          <div class="field"><label for="influx-token">Token de API</label><input id="influx-token" class="input" required type="password" placeholder="Token (não compartilhe)" autocomplete="off"></div>
+          <div class="field"><label for="influx-url">Endereço</label><input id="influx-url" name="influx-url" type="url" class="input mono" required value="http://127.0.0.1:8086" spellcheck="false"></div>
+          <div class="field"><label for="influx-org">Organização</label><input id="influx-org" name="influx-org" class="input" required placeholder="Ex.: Ecotam…" spellcheck="false"></div>
+          <div class="field"><label for="influx-bucket">Bucket</label><input id="influx-bucket" name="influx-bucket" class="input" required placeholder="Ex.: ecotam_telemetry…" spellcheck="false"></div>
+          <div class="field"><label for="influx-token">Token de API</label><input id="influx-token" name="influx-token" class="input" required type="password" placeholder="Cole o token de API…" autocomplete="off" spellcheck="false"></div>
           <div class="btn-row"><button type="submit" id="connect-button" class="btn btn--block">Conectar ao InfluxDB</button><button type="button" id="disconnect-button" class="btn btn--ghost btn--block">Desconectar</button></div>
         </form>
         <p class="fine">O token fica somente na memória do gateway; endereço restrito a localhost.</p>
@@ -204,18 +212,14 @@
         <p id="rx-live" class="fine mono">Aguardando RX…</p>
         <p id="error-status" class="error" role="alert"></p>
       </section>
-      <section class="panel span-2" aria-labelledby="h-flux">
+      <section class="panel span-all" aria-labelledby="h-flux">
         <header class="panel__head"><div><h3 id="h-flux">Consulta InfluxDB</h3><p>Campos ambientais e GPS disponíveis no bucket</p></div><button type="button" class="btn btn--ghost" id="copy-flux">Copiar consulta Flux</button></header>
         <pre id="flux" class="flux-code"></pre>
-      </section>
-      <section class="panel" aria-labelledby="h-reserved">
-        <header class="panel__head"><div><h3 id="h-reserved">Campos ainda não instrumentados</h3><p>Zeros legados não são medições físicas</p></div><span class="tag">Reservado</span></header>
-        <p class="note">Bateria, aceleração X/Y/Z e giroscópio X/Y/Z permanecem reservados no protocolo. Não são apresentados como sensores reais enquanto não forem conectados e validados.</p>
       </section>
     </div>
   </section>
 </main>
-<footer class="app-footer"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento</span><span>Dashboard restrito a 127.0.0.1 · Coordenadas GPS são informações privadas</span></footer>
+<footer class="app-footer"><span class="app-footer__brand"><img src="/assets/brand/logos/05-simbolo.svg" alt="" width="40" height="40"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento<em class="app-footer__slogan">Cabe outro olhar.</em></span></span><span>Dashboard restrito a 127.0.0.1 · Coordenadas GPS são informações privadas</span></footer>
 </div>
 </div>
 <nav class="tabbar" data-shell="tabbar" aria-label="Navegação principal"></nav>

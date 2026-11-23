@@ -19,7 +19,7 @@ function display(){if(!report)return;
  setText('q-gaps',fmtNum(report.gaps));setText('q-bad',fmtNum(report.bad_samples));
  setText('q-lost',fmtNum(report.estimated_missing));setText('q-dups',fmtNum(report.duplicates));
  setText('q-last',report.last_age_s===null?'—':`${Math.round(report.last_age_s)}s atrás`);
- setText('quality-explain',`${report.last_status} · ${report.sessions.length} sessão(ões) · ${report.events_total} alerta(s) detectado(s). Índice baseado em amostras presentes, campos problemáticos e ausências inferidas; não é medição do rádio.`);
+ setText('quality-explain',`${report.last_status} · ${report.sessions.length} ${report.sessions.length === 1 ? 'sessão' : 'sessões'} · ${report.events_total} ${report.events_total === 1 ? 'alerta detectado' : 'alertas detectados'}. Índice baseado em amostras presentes, campos problemáticos e ausências inferidas; não é medição do rádio.`);
  setText('q-events-caption',`${report.events.length} / ${report.events_total} eventos`);
  const tbody=node('q-sessions');tbody.replaceChildren();
  for(const session of report.sessions){const tr=document.createElement('tr');
@@ -30,7 +30,7 @@ function display(){if(!report)return;
  for(const item of report.events){const tr=document.createElement('tr');makeCell(fmtDate(item.time),tr);tagCell(eventLabel(item.kind),EVENT_TONE[item.kind],tr);makeCell(item.field||'—',tr);makeCell(item.detail,tr);events.appendChild(tr);}
  if(!report.events.length)blank(events,4,report.samples?'Nenhum alerta encontrado nas amostras consultadas.':'Sem dados no intervalo selecionado.');
 }
-async function analyze(){node('quality-run').disabled=true;setText('quality-run','Analisando...');banner('Consultando registros brutos no InfluxDB...',false,false,true);
+async function analyze(){node('quality-run').disabled=true;setText('quality-run','Analisando…');banner('Consultando registros brutos no InfluxDB…',false,false,true);
  try{const payload={period:node('quality-period').value};if(payload.period==='custom'){
   if(!node('quality-start').value||!node('quality-stop').value)throw new Error('Preencha início e fim do intervalo.');
   payload.start=new Date(node('quality-start').value).toISOString();payload.stop=new Date(node('quality-stop').value).toISOString();}

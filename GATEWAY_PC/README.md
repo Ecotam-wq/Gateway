@@ -50,7 +50,8 @@ Para consultas extensas, poderá aparecer **“Dados demais... selecione um per�
 | `ecotam_quality.py` | Nova auditoria dos registros brutos |
 | `qualidade.html` / `qualidade.js` | Nova interface de qualidade |
 | `dashboard.html` / `historico.html` | Dashboards anteriores preservados |
-| `dashboard.css` | Estilos compartilhados |
+| `dashboard.css` | Estilos compartilhados (design system CANIDÉ, tema claro) |
+| `assets/brand/` | Cópias sem edição do kit oficial CANIDÉ (logos, ícones, grafismos, fontes e licenças), servidas em `/assets/brand/` |
 | `tests/test_quality.py` | Testes de qualidade e endpoints |
 | `docs/software/DataQuality.md` | Documentação de projeto no padrão ECOTAM |
 

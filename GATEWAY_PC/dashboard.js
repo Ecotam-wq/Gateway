@@ -1,6 +1,6 @@
 "use strict";
 /* CANIDÉ — dashboard.js
-   1) Canide: identidade (arara vetorial) e moldura do aplicativo — sidebar,
+   1) Canide: identidade (arquivos oficiais do kit) e moldura do aplicativo — sidebar,
       topbar e barra de abas. Todas as páginas carregam este arquivo primeiro.
    2) EcoUI: núcleo visual compartilhado (formatação e gráficos SVG interativos).
       historico.html também carrega este arquivo para reutilizar os gráficos.
@@ -51,12 +51,10 @@ function nearestIndex(points, x) {
  return lo > 0 && Math.abs(points[lo - 1].x - x) <= Math.abs(points[lo].x - x) ? lo - 1 : lo;
 }
 const isMasked = () => document.body.classList.contains('mask-coords');
-/* Rampa de altitude na paleta: azul (baixa) → turquesa → amarelo (alta). */
-const RAMP = [[0x61, 0xB2, 0xF6], [0x43, 0xCC, 0xDE], [0xF2, 0x9F, 0x05]];
-function rampColor(f) {
- const t = Math.max(0, Math.min(1, f)) * 2, i = Math.min(1, Math.floor(t)), k = t - i, a = RAMP[i], b = RAMP[i + 1];
- return '#' + a.map((c, j) => Math.round(c + (b[j] - c) * k).toString(16).padStart(2, '0')).join('');
-}
+/* Altitude em três faixas com cores exatas da paleta (o manual não admite
+   gradientes nem variações de tom): azul (baixa) · turquesa · amarelo (alta). */
+const RAMP = ['#0367A6', '#04ADBF', '#F29F05'];
+function rampColor(f) { return RAMP[Math.min(2, Math.floor(Math.max(0, Math.min(1, f)) * 3))]; }
 function ping(node, scale = 3.4) {
  if (reduced() || !node.animate) return;
  node.animate([{transform: 'scale(1)', opacity: .85}, {transform: `scale(${scale})`, opacity: 0}], {duration: 950, easing: 'cubic-bezier(.22,1,.36,1)'});
@@ -66,33 +64,45 @@ function store(key, value) {
  return null;
 }
 
-/* ---------- Identidade CANIDÉ: arara-canindé vetorial ----------
-   Geometria única (viewBox 0 0 240 320), espelhada em /marca/canide/arara.svg.
-   'full' = ilustração pousada no galho; 'mark' = recorte circular da cabeça. */
-const ARARA = '<path d="M104 186 L132 196 L78 316 Z" fill="#024E7F"/><path d="M112 190 L132 196 L96 300 Z" fill="#04ADBF"/><path d="M120 193 L134 198 L113 262 Z" fill="#F29F05"/>'
- + '<path d="M126 60 C100 74 90 110 92 150 C94 178 104 196 120 206 L150 204 C146 160 150 120 168 96 Z" fill="#0367A6"/>'
- + '<path d="M168 100 C186 120 186 168 164 204 L128 206 C138 170 144 130 160 104 Z" fill="#F29F05"/><path d="M176 128 C182 152 178 182 164 204 L150 205 C162 182 170 156 176 128Z" fill="#F28705"/>'
- + '<path d="M124 92 C104 110 98 150 104 186 L92 240 C118 212 136 176 140 132 C142 112 136 98 124 92Z" fill="#024E7F"/><path d="M124 92 C134 100 140 114 140 132 C139 150 134 168 126 184 C130 160 130 120 124 92Z" fill="#035C94"/>'
- + '<path d="M104 186 L92 240 L116 198Z" fill="#04ADBF"/><path d="M112 146 C118 168 116 192 104 214" fill="none" stroke="#04ADBF" stroke-width="1.6" stroke-opacity=".6"/>'
- + '<path class="arara__feet" d="M140 204 l-6 18 M151 204 l2 18" stroke="#3A4650" stroke-width="5" stroke-linecap="round"/>'
- + '<path d="M122 70 C124 42 146 26 170 30 C184 32 194 42 196 56 L176 104 C160 108 140 100 128 90 Z" fill="#0367A6"/><path d="M126 64 C130 44 146 32 166 31 L158 42 C144 45 134 54 126 64Z" fill="#1B83C4"/>'
- + '<path d="M170 30 C184 32 194 42 196 56 L187 60 C183 48 176 40 163 34Z" fill="#95A94F"/>'
- + '<path d="M158 54 C170 48 186 52 190 64 L188 98 C177 104 162 100 156 90 C150 80 150 62 158 54Z" fill="#F4F7F9"/>'
- + '<path d="M161 80 q10 3.5 21 -.5 M163.5 86.5 q9.5 3 19.5 0 M167 93 q8 2.2 16 0" fill="none" stroke="#14161A" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="2.2 1.6"/>'
- + '<circle cx="171" cy="66" r="5.6" fill="#F6E7A6"/><circle cx="172" cy="66" r="3" fill="#0A0C0E"/><circle cx="173.2" cy="64.8" r=".9" fill="#FFFFFF"/>'
- + '<path d="M168 102 C178 106 188 110 194 118 L186 126 C178 116 170 110 160 106Z" fill="#14161A"/>'
- + '<path d="M188 92 L203 91 C207 99 207 109 201 118 C192 116 186 107 186 99 Z" fill="#2A2F36"/>'
- + '<path d="M186 50 C202 43 222 51 227 71 C231 90 225 108 213 121 C214 107 210 97 202 91 L188 92 Z" fill="#14161A"/>'
- + '<path d="M194 50 C208 48 220 56 224 70" fill="none" stroke="#3A414A" stroke-width="2" stroke-linecap="round"/>';
-const BRANCH = '<path d="M28 226 C80 220 150 222 228 214" fill="none" stroke="#5F7009" stroke-width="5" stroke-linecap="round"/><path d="M200 215 C206 203 217 198 228 199 C223 210 212 216 200 215Z" fill="#5F7009"/>';
-let araraSeq = 0;
-function araraMarkup(kind) {
- if (kind === 'full') return `<svg class="arara arara--full" viewBox="0 0 240 320" aria-hidden="true" focusable="false">${BRANCH}${ARARA}</svg>`;
- const clip = 'arara-clip' + (++araraSeq);
- return `<svg class="arara arara--mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><defs><clipPath id="${clip}"><circle cx="24" cy="24" r="22"/></clipPath></defs>`
-  + `<circle class="arara__disc" cx="24" cy="24" r="22"/><g clip-path="url(#${clip})"><g transform="translate(-31 -2) scale(.29)">${ARARA}</g></g><circle class="arara__ring" cx="24" cy="24" r="22.6"/></svg>`;
+/* ---------- Identidade CANIDÉ: arquivos oficiais do kit (/assets/brand) ----------
+   A arara da marca é o rosto em espaço negativo do D: nada é redesenhado aqui.
+   Cada uso aponta para o arquivo oficial previsto no manual para aquele fundo
+   e tamanho mínimo (horizontal ≥ 160 px, símbolo ≥ 40 px, compacta ≥ 200 px,
+   favicon para 16–32 px). */
+const BRAND = '/assets/brand/';
+const BRAND_FILE = {
+ logo: 'logos/01-principal-horizontal.svg', // assinatura colorida: só sobre branco
+ negative: 'logos/03-negativa-branca.svg',  // branca: campo azul uniforme
+ symbol: 'logos/05-simbolo.svg',            // o D com o rosto da arara
+ compact: 'logos/06-compacta.svg',          // painel de abertura
+ favicon: 'icons/08-favicon.svg'            // microaplicação
+};
+const brandSrc = (kind) => BRAND + BRAND_FILE[kind];
+const BRAND_SIZE = {logo: [941, 209], negative: [941, 209], symbol: [164, 164], compact: [480, 480], favicon: [32, 32]};
+const brandImg = (kind, cls, alt = '') => `<img class="${cls}" src="${brandSrc(kind)}" alt="${alt}" width="${BRAND_SIZE[kind][0]}" height="${BRAND_SIZE[kind][1]}" decoding="async" draggable="false" translate="no">`;
+function mountBrand(root = document) { for (const el of root.querySelectorAll('[data-brand]')) if (!el.firstElementChild) el.innerHTML = brandImg(el.dataset.brand, 'brand-img'); }
+
+/* Abertura: painel compacto oficial sobre o padrão da marca, uma vez por sessão
+   do navegador. Some quando a página fica pronta (primeira resposta do gateway
+   no Tempo real), nunca antes de 600 ms nem depois de 2,5 s. */
+function splash() {
+ let seen = null; try { seen = sessionStorage.getItem('canide.splash'); sessionStorage.setItem('canide.splash', '1'); } catch { /* sem armazenamento: mostra */ }
+ if (seen) return;
+ const el = document.createElement('div');
+ el.className = 'splash';
+ el.setAttribute('role', 'status');
+ el.innerHTML = `${brandImg('compact', 'splash__mark', 'CANIDÉ')}<p class="splash__msg"><span class="splash__ring" aria-hidden="true"></span>Conectando ao gateway local…</p>`;
+ document.body.appendChild(el);
+ const t0 = performance.now();
+ let done = false;
+ const close = () => {
+  if (done) return; done = true;
+  setTimeout(() => { el.classList.add('is-leaving'); setTimeout(() => el.remove(), reduced() ? 0 : 420); }, Math.max(0, 600 - (performance.now() - t0)));
+ };
+ if (!document.body.classList.contains('is-loading')) close();
+ else new MutationObserver((_, mo) => { if (!document.body.classList.contains('is-loading')) { mo.disconnect(); close(); } }).observe(document.body, {attributes: true, attributeFilter: ['class']});
+ setTimeout(close, 2500);
 }
-function mountArara(root = document) { for (const el of root.querySelectorAll('[data-arara]')) if (!el.firstElementChild) el.innerHTML = araraMarkup(el.dataset.arara); }
 
 /* ---------- Moldura do aplicativo: sidebar, topbar e barra de abas ----------
    Uma única definição de navegação para as três páginas. "sections" são as
@@ -104,7 +114,7 @@ const ICON = {
  collapse: '<path d="M10 3.5 5.5 8l4.5 4.5"/>',
  host: '<path d="M2.5 4.5h11v7h-11zM5.5 14h5M8 11.5V14"/>'
 };
-const icon = (name) => `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
+const icon = (name) => `<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICON[name]}</svg>`;
 const NAV = [
  {page: 'live', href: '/', label: 'Tempo real', sections: [['h-track', 'Trajetória'], ['bme-title', 'Atmosfera'], ['gps-title', 'GPS'], ['ops-title', 'Gateway e banco']]},
  {page: 'history', href: '/historico', label: 'Histórico', sections: [['h-filters', 'Explorar registros'], ['h-compare', 'Comparar sessões'], ['h-table', 'Dados consultados']]},
@@ -116,16 +126,18 @@ function navLinks(page, withTitle) {
 function renderShell() {
  const page = document.body.dataset.page, current = NAV.find(n => n.page === page) || NAV[0];
  const side = document.querySelector('[data-shell="sidebar"]'), top = document.querySelector('[data-shell="topbar"]'), tabs = document.querySelector('[data-shell="tabbar"]');
- if (side) side.innerHTML = `<a class="side-brand" href="/" aria-label="CANIDÉ — Telemetria e rastreamento, ir para Tempo real"><span class="side-brand__mark" data-arara="mark"></span><span class="side-brand__text"><span class="wordmark">CANIDÉ</span><span class="side-brand__tag">Telemetria &amp; rastreamento</span></span></a>`
+ if (side) side.innerHTML = `<a class="side-brand" href="/" aria-label="CANIDÉ, telemetria e rastreamento. Ir para Tempo real">${brandImg('negative', 'side-brand__logo')}<span class="side-brand__mark">${brandImg('symbol', 'brand-img')}</span><span class="side-brand__tag">Telemetria &amp; rastreamento</span></a>`
   + `<nav class="side-nav" aria-label="Navegação principal"><p class="side-label">Operação</p><ul>${navLinks(page, true)}</ul></nav>`
   + `<nav class="side-sections" aria-label="Nesta página"><p class="side-label">Nesta página</p><ul>${current.sections.filter(([id]) => $(id)).map(([id, label]) => `<li><a href="#${id}" data-section="${id}">${label}</a></li>`).join('')}</ul></nav>`
+  + '<span class="side-gesture" aria-hidden="true"></span>'
   + `<div class="side-foot"><p class="side-host" title="Gateway local">${icon('host')}<span>Gateway local · ${location.host || '127.0.0.1'}</span></p>`
   + `<button type="button" class="side-collapse" aria-pressed="false">${icon('collapse')}<span>Recolher menu</span></button></div>`;
- if (top) top.innerHTML = `<a class="top-brand" href="/" aria-label="CANIDÉ, ir para Tempo real"><span data-arara="mark"></span><span class="wordmark">CANIDÉ</span></a>`
+ if (top) top.innerHTML = `<a class="top-brand" href="/" aria-label="CANIDÉ, ir para Tempo real">${brandImg('logo', 'top-brand__logo')}</a>`
   + `<p class="top-title"><span class="top-crumb">CANIDÉ</span><span class="top-sep" aria-hidden="true">/</span><strong>${current.label}</strong></p>`
   + '<div class="link-state" title="Estado da ligação com o gateway local"><span id="dot" class="dot" aria-hidden="true"></span><span id="mode-label">Conectando…</span></div>';
  if (tabs) tabs.innerHTML = `<ul>${navLinks(page, false)}</ul>`;
- mountArara();
+ mountBrand();
+ splash();
 
  // Recolher a sidebar: preferência deste navegador.
  const collapse = side?.querySelector('.side-collapse');
@@ -150,10 +162,10 @@ function renderShell() {
  store('canide.visited.' + page, '1');
 }
 
-/* Saudação conforme o horário local do navegador. */
+/* Data local do navegador, no subtítulo da página (sem saudação). */
 function greeting(now = new Date()) {
- const h = now.getHours(), hello = h < 5 ? 'Boa noite' : h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
- return `${hello} · ${now.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'})}`;
+ const day = now.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'});
+ return day.charAt(0).toUpperCase() + day.slice(1);
 }
 renderShell();
 for (const el of document.querySelectorAll('[data-greeting]')) setText(el, greeting());
@@ -365,7 +377,7 @@ class LineChart extends BaseChart {
    // Faixa da fita escrita na vertical, ao longo do instrumento (não disputa espaço com o eixo X).
    const dec = this.o.tape.fixed ? 0 : this.o.decimals, rx = tx + w + 12, ry = ((T + B) / 2).toFixed(1);
    setAttrs(tp.range, {x: rx, y: ry, transform: `rotate(-90 ${rx} ${ry})`});
-   setText(tp.range, this.o.tape.fixed ? `escala ${format(tmin, 0)}–${format(tmax, 0)}` : `mín ${format(tmin, dec)} · máx ${format(tmax, dec)}`);
+   setText(tp.range, this.o.tape.fixed ? `escala de ${format(tmin, 0)} a ${format(tmax, 0)}` : `mín ${format(tmin, dec)} · máx ${format(tmax, dec)}`);
   }
   if (this.pointer !== null || this.cursor !== null) this.inspect(false);
  }
@@ -414,7 +426,7 @@ class LineChart extends BaseChart {
 
 /* ---------- Trajetória XY: metros relativos à primeira posição (T0) ---------- */
 class TrackChart extends BaseChart {
- constructor(svg, options = {}) { super(svg, Object.assign({empty: 'Aguardando fix GPS · nenhuma posição válida na janela'}, options)); }
+ constructor(svg, options = {}) { super(svg, Object.assign({empty: 'Aguardando fix GPS · nenhuma posição válida na janela', emptyShort: 'Aguardando fix GPS'}, options)); }
  build() {
   const s = this.svg;
   this.frameRect = svgEl('rect', {class: 'track-frame', rx: 12}, s);
@@ -424,14 +436,13 @@ class TrackChart extends BaseChart {
   this.radar = svgEl('g', {class: 'radar', 'clip-path': clip}, s);
   this.radarRings = [1, 2, 3].map(() => svgEl('circle', {class: 'axis-ring'}, this.radar));
   const sweep = svgEl('g', {class: 'radar-sweep'}, this.radar);
-  // Arara no centro da varredura: o sistema "procura" a primeira posição válida.
-  this.radarBird = svgEl('g', {class: 'radar-bird'}, this.radar);
-  this.radarBird.innerHTML = ARARA;
+  // Símbolo oficial (o D da arara) no centro da varredura: o sistema "procura" a primeira posição válida.
+  this.radarBird = svgEl('image', {class: 'radar-bird', href: brandSrc('symbol')}, this.radar);
   this.sweepLine = svgEl('line', null, sweep); this.sweepWedge = svgEl('path', null, sweep); this.sweep = sweep;
   this.gGrid = svgEl('g', {class: 'grid', 'clip-path': clip}, s);
   this.gRings = svgEl('g', {'clip-path': clip}, s);
   this.gRingText = svgEl('g', {class: 'tick', 'clip-path': clip}, s);
-  this.compass = svgEl('text', {class: 'compass'}, s); this.compass.textContent = 'N ↑';
+  this.compass = svgEl('text', {class: 'compass'}, s); this.compass.textContent = 'N';
   this.scaleText = svgEl('text', null, svgEl('g', {class: 'tick'}, s));
   this.cross = svgEl('g', {class: 'crosshair is-off'}, s);
   this.crossV = svgEl('line', null, this.cross); this.crossH = svgEl('line', null, this.cross);
@@ -464,7 +475,7 @@ class TrackChart extends BaseChart {
   this.svg.classList.toggle('is-empty', empty);
   const mx = (L + R) / 2, my = (T + B) / 2;
   setAttrs(this.emptyText, {x: mx.toFixed(1), y: (B - 22).toFixed(1)});
-  setText(this.emptyText, empty ? this.o.empty : '');
+  setText(this.emptyText, empty ? (W < 560 ? this.o.emptyShort : this.o.empty) : '');
   for (const n of [this.halo, this.gSeg, this.gDots, this.start, this.startLabel, this.reticle, this.endGroup, this.gRings, this.gRingText, this.gGrid]) n.classList.toggle('is-off', empty);
   if (empty) {
    const rr = Math.min(R - L, B - T) * .36;
@@ -472,8 +483,8 @@ class TrackChart extends BaseChart {
    setAttrs(this.sweepLine, {x1: mx, y1: my, x2: mx, y2: (my - rr).toFixed(1)});
    setAttr(this.sweepWedge, 'd', `M${mx} ${my}L${mx} ${my - rr}A${rr} ${rr} 0 0 0 ${(mx - rr * Math.sin(.6)).toFixed(1)} ${(my - rr * Math.cos(.6)).toFixed(1)}Z`);
    this.sweep.style.transformOrigin = `${mx}px ${my}px`;
-   const k = rr * .62 / 290;
-   setAttr(this.radarBird, 'transform', `translate(${(mx - 155 * k).toFixed(1)} ${(my - 171 * k).toFixed(1)}) scale(${k.toFixed(4)})`);
+   const size = Math.max(40, rr * .5); // símbolo isolado: mínimo 40 px (manual)
+   setAttrs(this.radarBird, {x: (mx - size / 2).toFixed(1), y: (my - size / 2).toFixed(1), width: size.toFixed(1), height: size.toFixed(1)});
    setText(this.scaleText, ''); this.proj = []; this.drawn = false; this.lastKey = null; this.hideInspect(); return;
   }
 
@@ -513,7 +524,7 @@ class TrackChart extends BaseChart {
   const segs = sync(this.gSeg, Math.max(0, this.proj.length - 1), 'line', {class: 'track-seg'});
   for (let i = 1; i < this.proj.length; i++) {
    const a = this.proj[i - 1], b = this.proj[i], alt = (a.q.alt + b.q.alt) / 2;
-   setAttrs(segs[i - 1], {x1: a.px.toFixed(1), y1: a.py.toFixed(1), x2: b.px.toFixed(1), y2: b.py.toFixed(1), stroke: Number.isFinite(alt) ? rampColor((alt - aMin) / aSpan) : '#61B2F6'});
+   setAttrs(segs[i - 1], {x1: a.px.toFixed(1), y1: a.py.toFixed(1), x2: b.px.toFixed(1), y2: b.py.toFixed(1), stroke: Number.isFinite(alt) ? rampColor((alt - aMin) / aSpan) : RAMP[0]});
   }
   const dots = sync(this.gDots, this.proj.length, 'circle', {class: 'track-dot', r: 1.8});
   this.proj.forEach((o, i) => setAttrs(dots[i], {cx: o.px.toFixed(1), cy: o.py.toFixed(1)}));
@@ -557,7 +568,7 @@ class TrackChart extends BaseChart {
 }
 
 window.EcoUI = Object.freeze({LineChart, TrackChart, format, fmtClock, niceStep, stepDecimals, setText});
-window.Canide = Object.freeze({araraMarkup, mountArara, greeting});
+window.Canide = Object.freeze({brandSrc, brandImg, mountBrand, greeting});
 
 /* ======================================================================
    Painel Tempo real
@@ -742,7 +753,7 @@ async function refresh() {
   setText($('last-write'), state.last_write || '—');
   setText($('influx-status'), state.influx_status);
   setText($('error-status'), [state.csv_error, state.rx_error, state.influx_error].filter(Boolean).join(' | '));
-  setText($('rx-live'), state.source === 'rx' ? `${state.port} · ${state.rx_lines} linhas · ${state.rx_headers} cabeçalhos · ${state.rx_frames} frames · ${state.rx_last_age_s ?? '—'} s desde o último frame` : 'Simulador selecionado: dados artificiais. Mude para RX/COM3 para observar os sensores.');
+  setText($('rx-live'), state.source === 'rx' ? `${state.port} · ${state.rx_lines} linhas · ${state.rx_headers} cabeçalhos · ${state.rx_frames} frames · ${state.rx_last_age_s == null ? 'nenhum frame recebido' : `${state.rx_last_age_s} s desde o último frame`}` : 'Simulador selecionado: dados artificiais. Mude para RX/COM3 para observar os sensores.');
   if (state.influx_bucket && state.influx_bucket !== previousBucket) { previousBucket = state.influx_bucket; updateFlux(); }
  } catch (err) { setOnline(false, err); }
  finally { pollBusy = false; }
