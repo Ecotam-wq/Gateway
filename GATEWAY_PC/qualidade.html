@@ -3,68 +3,95 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <title>ECOTAM | Qualidade dos dados</title>
+ <meta name="color-scheme" content="light">
+ <meta name="theme-color" content="#FFFFFF">
+ <title>CANIDÉ · Qualidade dos dados</title>
+ <link rel="icon" href="/assets/brand/icons/08-favicon.svg" type="image/svg+xml">
+ <link rel="icon" href="/assets/brand/icons/favicon.ico" sizes="32x32">
+ <link rel="apple-touch-icon" href="/assets/brand/icons/07-avatar.png">
+ <link rel="preload" href="/assets/brand/fonts/OpenSans-Regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/assets/brand/fonts/OpenSans-Bold.woff" as="font" type="font/woff" crossorigin>
  <link rel="stylesheet" href="/dashboard.css">
+ <script src="/dashboard.js" defer></script>
  <script src="/qualidade.js" defer></script>
 </head>
-<body class="history-body">
- <div class="shell">
-  <header class="topbar">
-   <div><div class="wordmark">◈ ECOTAM <span>ENGINEERING</span></div><div class="meta">DATA INTEGRITY / SPRINT 13</div></div>
-   <nav class="ec-nav" aria-label="Navegação"><a href="/">Tempo real</a><a href="/historico">Histórico</a><a href="/qualidade" aria-current="page">Qualidade</a></nav>
-  </header>
-  <div class="intro history-hero">
-   <div class="eyebrow">SPRINT 13 · AUDITORIA DE AQUISIÇÃO</div>
-   <h1>Qualidade de dados</h1>
-   <p>Identifique lacunas, duplicatas de sequência e campos ilegíveis nos registros do InfluxDB. Os registros podem conter dados reais ou simulados; alertas de qualidade não são diagnósticos de hardware.</p>
+<body data-page="quality" class="history-body">
+<a class="skip-link" href="#main">Pular para o conteúdo</a>
+<div class="app">
+<div class="sidebar" data-shell="sidebar"></div>
+<div class="app-main">
+<header class="topbar" data-shell="topbar"></header>
+<main id="main" class="page">
+ <section class="mission-hero" aria-labelledby="page-title">
+  <div class="hero__copy">
+   <h1 id="page-title" class="mission-title">Qualidade dos dados</h1>
+   <p class="lede">Encontre lacunas, sequências duplicadas e campos ilegíveis nos registros brutos do InfluxDB, sem médias. Um alerta de qualidade não é diagnóstico de hardware.</p>
   </div>
-  <div id="quality-status" class="history-banner" role="status">Verificando a conexão ao gateway...</div>
-  <section class="panel history-controls" aria-label="Filtros da análise">
-   <div class="section-head"><div><h2>Auditoria de um período</h2><p>A consulta lê os registros originais, sem alterar o banco.</p></div><span class="pill">InfluxDB 2.x · dados brutos</span></div>
-   <div class="quality-filters">
-    <div class="control"><label for="quality-period">Período</label><select id="quality-period"><option value="15m">Últimos 15 minutos</option><option value="1h" selected>Última 1 hora</option><option value="6h">Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="custom">Personalizado</option></select></div>
-    <div class="control control-action"><label>&nbsp;</label><button id="quality-run">Analisar qualidade</button></div>
-    <div class="control control-action"><label>&nbsp;</label><button id="quality-export" class="secondary">Exportar relatório CSV</button></div>
-   </div>
-   <div id="quality-custom" class="history-custom hidden"><div class="control"><label for="quality-start">Início (hora local)</label><input type="datetime-local" id="quality-start"></div><div class="control"><label for="quality-stop">Fim (hora local)</label><input type="datetime-local" id="quality-stop"></div></div>
-   <p class="fine">A análise utiliza referência temporal aproximada de ~1 amostra/s; ajuste a interpretação à taxa efetiva de transmissão. Períodos longos podem exceder o limite seguro de consulta: nesse caso, selecione um período menor.</p>
-  </section>
-  <section class="quality-kpis" aria-label="Resumo de qualidade">
-   <div class="kpi"><span>AMOSTRAS OBSERVADAS</span><strong id="q-samples">—</strong><small>Registros encontrados no InfluxDB</small></div>
-   <div class="kpi"><span>ÍNDICE ESTIMADO</span><strong id="q-score">—</strong><small>Heurística, não taxa de rádio</small></div>
-   <div class="kpi"><span>LACUNAS DE TEMPO</span><strong id="q-gaps">—</strong><small>Intervalos &gt; 2,5s dentro de sessão</small></div>
-   <div class="kpi"><span>AMOSTRAS COM ALERTA</span><strong id="q-bad">—</strong><small>Ausência, faixa ou sequência</small></div>
-  </section>
-  <section class="quality-two-col">
-   <div class="panel">
-    <div class="section-head"><div><h2>Diagnóstico da amostragem</h2><p>Contadores deduzidos dos registros encontrados.</p></div></div>
-    <div class="metrics quality-metrics">
-     <div><span>Registros estimados ausentes</span><strong id="q-lost">—</strong></div>
-     <div><span>Sequências duplicadas</span><strong id="q-dups">—</strong></div>
-     <div><span>Última amostra</span><strong id="q-last">—</strong></div>
-    </div>
-    <p class="fine" id="quality-explain">Nenhuma consulta executada.</p>
-   </div>
-   <div class="panel">
-    <div class="section-head"><div><h2>Saúde do gateway (ao vivo)</h2><p>Contadores desta execução do programa.</p></div><span class="pill" id="q-runtime-status">Verificando</span></div>
-    <div class="metrics quality-metrics">
-     <div><span>Escritas confirmadas</span><strong id="q-write-ok">—</strong></div>
-     <div><span>Falhas de escrita</span><strong id="q-write-fail">—</strong></div>
-     <div><span>Descarte de fila</span><strong id="q-queue">—</strong></div>
-    </div>
-    <p class="fine" id="q-runtime-detail">Aguardando o status do gateway.</p>
+ </section>
+ <div id="quality-status" class="banner" role="status">Verificando a conexão com o gateway…</div>
+
+ <section class="panel hud" aria-labelledby="h-filters">
+  <header class="panel__head"><div><h2 id="h-filters">Auditoria de um período</h2><p>A consulta lê os registros originais, sem alterar o banco.</p></div></header>
+  <div class="filters filters--quality">
+   <div class="control"><label for="quality-period">Período</label><select id="quality-period"><option value="15m">Últimos 15 minutos</option><option value="1h" selected>Última 1 hora</option><option value="6h">Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="custom">Personalizado</option></select></div>
+   <div class="control control-action"><button type="button" id="quality-run" class="btn">Analisar qualidade</button></div>
+   <div class="control control-action"><button type="button" id="quality-export" class="btn btn--ghost">Exportar relatório CSV</button></div>
+  </div>
+  <div id="quality-custom" class="custom-range hidden"><div class="control"><label for="quality-start">Início (hora local)</label><input type="datetime-local" id="quality-start" name="quality-start"></div><div class="control"><label for="quality-stop">Fim (hora local)</label><input type="datetime-local" id="quality-stop" name="quality-stop"></div></div>
+  <p class="fine">A análise considera cerca de 1 amostra por segundo. Leia os resultados de acordo com a taxa real de transmissão. Se o período exceder o limite da consulta, escolha um período menor.</p>
+ </section>
+
+ <div class="integrity">
+  <section class="panel hud score-panel" aria-labelledby="h-score">
+   <header class="panel__head"><div><h2 id="h-score" class="deck-title">Integridade da amostragem</h2><p>Índice estimado para comparar sessões. Não é a taxa de entrega do rádio.</p></div></header>
+   <div class="score">
+    <svg class="score__ring" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+     <circle class="score__track" cx="60" cy="60" r="50" pathLength="100"/>
+     <circle id="q-score-arc" class="score__arc" cx="60" cy="60" r="50" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 60 60)"/>
+    </svg>
+    <strong class="score__value" id="q-score">—</strong>
    </div>
   </section>
-  <section class="panel quality-section">
-   <div class="section-head"><div><h2>Resumo por sessão</h2><p>As sessões do Sprint 11 podem ser inferidas; as do Sprint 12/13 usam identificador gravado no banco.</p></div></div>
-   <div class="history-table-scroll"><table class="history-table"><thead><tr><th>Sessão</th><th>Início</th><th>Amostras</th><th>Com alerta</th><th>Lacunas</th><th>Ausências estimadas</th></tr></thead><tbody id="q-sessions"><tr><td colspan="6" class="empty-row">Aguardando auditoria...</td></tr></tbody></table></div>
+  <section class="panel readouts readouts--quality" aria-label="Resumo de qualidade">
+   <div class="readout tone-blue"><span class="readout__label">Amostras observadas</span><strong class="readout__value" id="q-samples">—</strong><span class="readout__note">Registros encontrados no InfluxDB</span></div>
+   <div class="readout tone-yellow"><span class="readout__label">Lacunas de tempo</span><strong class="readout__value" id="q-gaps">—</strong><span class="readout__note">Intervalos &gt; 2,5 s dentro de sessão</span></div>
+   <div class="readout tone-danger"><span class="readout__label">Amostras com alerta</span><strong class="readout__value" id="q-bad">—</strong><span class="readout__note">Ausência, faixa ou sequência</span></div>
+   <div class="readout tone-neutral"><span class="readout__label">Registros estimados ausentes</span><strong class="readout__value" id="q-lost">—</strong><span class="readout__note">Inferidos por sequência</span></div>
   </section>
-  <section class="panel quality-section">
-   <div class="section-head"><div><h2>Eventos detectados</h2><p>Prévia de até 150 ocorrências; o CSV exporta essa mesma prévia e os totais aparecem acima.</p></div><span id="q-events-caption" class="pill">Sem análise</span></div>
-   <div class="history-table-scroll"><table class="history-table"><thead><tr><th>Horário</th><th>Categoria</th><th>Campo</th><th>Descrição</th></tr></thead><tbody id="q-events"><tr><td colspan="4" class="empty-row">Nenhum evento consultado.</td></tr></tbody></table></div>
-  </section>
-  <p class="quality-disclaimer">Limites: lacunas anteriores à primeira amostra não são detectáveis. O InfluxDB pode consolidar gravações com chave e horário idênticos, impossibilitando observar algumas duplicatas. A análise não verifica calibração de sensores nem integridade física do enlace.</p>
-  <footer>ECOTAM • Sprint 13 • Auditoria somente leitura • Sem conexão ao ESP-NOW obrigatória</footer>
  </div>
+
+ <section class="layout-2">
+  <div class="panel">
+   <header class="panel__head"><div><h2>Diagnóstico da amostragem</h2><p>Contadores deduzidos dos registros encontrados.</p></div></header>
+   <div class="counters counters--2">
+    <div><span>Sequências duplicadas</span><strong id="q-dups">—</strong></div>
+    <div><span>Última amostra</span><strong id="q-last">—</strong></div>
+   </div>
+   <p class="fine" id="quality-explain">Nenhuma consulta executada.</p>
+  </div>
+  <div class="panel">
+   <header class="panel__head"><div><h2>Saúde do gateway (ao vivo)</h2><p>Contadores desta execução do programa.</p></div><span class="tag" id="q-runtime-status" role="status">Verificando</span></header>
+   <div class="counters">
+    <div><span>Escritas confirmadas</span><strong id="q-write-ok">—</strong></div>
+    <div><span>Falhas de escrita</span><strong id="q-write-fail">—</strong></div>
+    <div><span>Descarte de fila</span><strong id="q-queue">—</strong></div>
+   </div>
+   <p class="fine" id="q-runtime-detail">Aguardando o status do gateway.</p>
+  </div>
+ </section>
+
+ <section class="panel section-tight" aria-labelledby="h-sessions">
+  <header class="panel__head"><div><h2 id="h-sessions">Resumo por sessão</h2><p>As sessões do Sprint 11 podem ser inferidas; as do Sprint 12/13 usam identificador gravado no banco.</p></div></header>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Sessão</th><th scope="col">Início</th><th scope="col">Amostras</th><th scope="col">Com alerta</th><th scope="col">Lacunas</th><th scope="col">Ausências estimadas</th></tr></thead><tbody id="q-sessions"><tr><td colspan="6" class="empty-row">Nenhuma auditoria executada.</td></tr></tbody></table></div>
+ </section>
+ <section class="panel section-tight" aria-labelledby="h-events">
+  <header class="panel__head"><div><h2 id="h-events">Eventos detectados</h2><p>Prévia de até 150 ocorrências; o CSV exporta essa mesma prévia e os totais aparecem acima.</p></div><span id="q-events-caption" class="tag">Sem análise</span></header>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Horário</th><th scope="col">Categoria</th><th scope="col">Campo</th><th scope="col">Descrição</th></tr></thead><tbody id="q-events"><tr><td colspan="4" class="empty-row">Nenhum evento consultado.</td></tr></tbody></table></div>
+ </section>
+ <p class="disclaimer">Limites: lacunas anteriores à primeira amostra não são detectáveis. O InfluxDB pode consolidar gravações com chave e horário idênticos, impossibilitando observar algumas duplicatas. A análise não verifica calibração de sensores nem integridade física do enlace.</p>
+</main>
+<footer class="app-footer"><span class="app-footer__brand"><img src="/assets/brand/logos/05-simbolo.svg" alt="" width="40" height="40"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento<em class="app-footer__slogan">Cabe outro olhar.</em></span></span><span>Auditoria somente leitura · sem conexão ao ESP-NOW obrigatória</span></footer>
+</div>
+</div>
+<nav class="tabbar" data-shell="tabbar" aria-label="Navegação principal"></nav>
 </body>
 </html>

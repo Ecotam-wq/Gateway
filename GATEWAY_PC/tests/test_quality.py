@@ -151,7 +151,7 @@ class QualityTests(unittest.TestCase):
             import urllib.request
             base = f'http://127.0.0.1:{server.server_port}'
             with urllib.request.urlopen(base+'/qualidade') as res:
-                self.assertIn(b'Qualidade de dados', res.read())
+                self.assertIn('Qualidade dos dados'.encode(), res.read())
             with urllib.request.urlopen(base+'/qualidade.js') as res:
                 self.assertIn(b'/api/quality', res.read())
             req = urllib.request.Request(base+'/api/quality',

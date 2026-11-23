@@ -30,6 +30,8 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent
+BRAND_DIR = ROOT / "assets" / "brand"
+BRAND_TYPES = {".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon", ".woff": "font/woff"}
 DADOS = ROOT / "dados"
 HOST = "127.0.0.1"
 PORT = 8765
@@ -243,7 +245,7 @@ def set_source(mode: str, port: str = "COM3") -> dict[str, str]:
                 and prior is not None and getattr(prior, "is_open", False)
                 and prior_thread is not None and prior_thread.is_alive()):
             STATE.rx_error = ""
-            return {"message": f"A {port} já está conectada ao gateway. Não abri a porta novamente."}
+            return {"message": f"A {port} já está conectada ao gateway. A porta não foi reaberta."}
 
         old_stop = STATE.rx_stop
         old_stop.set()
@@ -278,7 +280,7 @@ def set_source(mode: str, port: str = "COM3") -> dict[str, str]:
     try:
         new_serial = serial.Serial(port, 115200, timeout=0.5)
     except Exception as exc:
-        detail = (f"Não consegui abrir {port}: {exc}. Se o gateway acabou de iniciar, "
+        detail = (f"Não foi possível abrir {port}: {exc}. Se o gateway acabou de iniciar, "
                   "outro programa ou um driver pode estar usando a porta. "
                   "Execute DIAGNOSTICAR_COM3.bat com o gateway fechado.")
         with STATE.lock:
@@ -453,6 +455,15 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, status: int, data: dict[str, Any]) -> None:
         self._respond(status, json.dumps(data, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8")
 
+    def _brand_asset(self) -> None:
+        # Arquivos oficiais do kit CANIDÉ: só leitura, só tipos conhecidos, sem sair da pasta.
+        rel = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)[len("/assets/brand/"):]
+        target = (BRAND_DIR / rel).resolve()
+        ctype = BRAND_TYPES.get(target.suffix.lower())
+        if ctype is None or not target.is_relative_to(BRAND_DIR) or not target.is_file():
+            return self._json(404, {"error": "Não encontrado"})
+        self._respond(200, target.read_bytes(), ctype)
+
     def do_GET(self) -> None:
         if self.path == "/":
             self._respond(200, (ROOT / "dashboard.html").read_bytes(), "text/html; charset=utf-8")
@@ -468,6 +479,8 @@ class Handler(BaseHTTPRequestHandler):
             self._respond(200, (ROOT / "qualidade.html").read_bytes(), "text/html; charset=utf-8")
         elif self.path == "/qualidade.js":
             self._respond(200, (ROOT / "qualidade.js").read_bytes(), "text/javascript; charset=utf-8")
+        elif self.path.startswith("/assets/brand/"):
+            self._brand_asset()
         elif self.path == "/api/status":
             self._json(200, snapshot())
         else:
@@ -521,6 +534,13 @@ class Handler(BaseHTTPRequestHandler):
             self._json(500, {"error": f"Falha local: {exc}"})
 
 
+class GatewayServer(ThreadingHTTPServer):
+    # No Windows, SO_REUSEADDR deixa um segundo gateway ouvir a mesma porta em
+    # silêncio, e o processo antigo continua respondendo. Sem ele, a nova
+    # instância falha com a mensagem "Feche o gateway anterior".
+    allow_reuse_address = os.name != "nt"
+
+
 def main() -> None:
     print("=" * 56)
     print(" ECOTAM | SPRINT 17.1 | DASHBOARD BME280 + GPS")
@@ -536,7 +556,7 @@ def main() -> None:
             print("Feche os programas que usam COM3 e tente novamente.", flush=True)
             return
     try:
-        server = ThreadingHTTPServer((HOST, PORT), Handler)
+        server = GatewayServer((HOST, PORT), Handler)
     except OSError as exc:
         print("[ERRO WEB] Nao foi possivel abrir a porta 8765: " + str(exc), flush=True)
         print("Feche o gateway anterior e execute novamente.", flush=True)

@@ -3,56 +3,73 @@
 <head>
  <meta charset="utf-8" />
  <meta name="viewport" content="width=device-width,initial-scale=1" />
- <title>ECOTAM | Análise Histórica</title>
+ <meta name="color-scheme" content="light">
+ <meta name="theme-color" content="#FFFFFF">
+ <title>CANIDÉ · Histórico</title>
+ <link rel="icon" href="/assets/brand/icons/08-favicon.svg" type="image/svg+xml">
+ <link rel="icon" href="/assets/brand/icons/favicon.ico" sizes="32x32">
+ <link rel="apple-touch-icon" href="/assets/brand/icons/07-avatar.png">
+ <link rel="preload" href="/assets/brand/fonts/OpenSans-Regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="/assets/brand/fonts/OpenSans-Bold.woff" as="font" type="font/woff" crossorigin>
  <link rel="stylesheet" href="/dashboard.css" />
+ <script src="/dashboard.js" defer></script>
  <script src="/historico.js" defer></script>
 </head>
-<body class="history-body">
- <div class="shell">
-  <header class="topbar">
-    <div><div class="wordmark">◈ ECOTAM <span>ENGINEERING</span></div><div class="meta">TELEMETRY SYSTEM / SPRINT 13</div></div>
-    <nav class="ec-nav" aria-label="Navegação"><a href="/">Tempo real</a><a href="/historico" aria-current="page">Histórico</a><a href="/qualidade">Qualidade</a></nav>
-  </header>
-  <div class="intro history-hero">
-    <div class="eyebrow">SPRINT 13 · ANÁLISE DE DADOS</div>
-    <h1>Histórico de telemetria</h1>
-    <p>Investigue períodos anteriores, compare sessões e exporte registros salvos no InfluxDB. Os registros podem conter dados reais do RX ou dados simulados; confira a origem da sessão.</p>
+<body data-page="history" class="history-body">
+<a class="skip-link" href="#main">Pular para o conteúdo</a>
+<div class="app">
+<div class="sidebar" data-shell="sidebar"></div>
+<div class="app-main">
+<header class="topbar" data-shell="topbar"></header>
+<main id="main" class="page">
+ <section class="mission-hero" aria-labelledby="page-title">
+  <div class="hero__copy">
+   <h1 id="page-title" class="mission-title">Histórico de sessões</h1>
+   <p class="lede">Consulte períodos anteriores, compare sessões e exporte os registros salvos no InfluxDB. Somente leitura: nenhum dado é alterado. Uma sessão pode ter dados reais do RX ou simulados; confira a coluna Origem.</p>
   </div>
-  <div id="history-status" class="history-banner" role="status">Verificando a conexão com o InfluxDB...</div>
-  <section class="panel history-controls" aria-label="Filtros">
-    <div class="section-head"><div><h2>Explorar registros</h2><p>As consultas leem o banco. Não alteram dados existentes.</p></div><span class="pill">InfluxDB 2.x</span></div>
-    <div class="history-filter-grid">
-      <div class="control"><label for="period">Período</label><select id="period"><option value="15m">Últimos 15 min</option><option value="1h">Última 1 hora</option><option value="6h" selected>Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="7d">Últimos 7 dias</option><option value="30d">Últimos 30 dias</option><option value="custom">Personalizado</option></select></div>
-      <div class="control"><label for="metric">Variável</label><select id="metric"><option value="altitude_m">Altitude BME280 (m)</option><option value="gps_altitude_m">Altitude GPS (m)</option><option value="humidity_pct">Umidade relativa (%)</option><option value="latitude">Latitude (graus)</option><option value="longitude">Longitude (graus)</option><option value="satellites">Satélites (número)</option><option value="pressure_pa">Pressão (Pa)</option><option value="temperature_c">Temperatura (°C)</option><option value="battery_v">Bateria (V)</option><option value="accel_x">Aceleração X</option><option value="accel_y">Aceleração Y</option><option value="accel_z">Aceleração Z</option><option value="gyro_x">Giroscópio X</option><option value="gyro_y">Giroscópio Y</option><option value="gyro_z">Giroscópio Z</option></select></div>
-      <div class="control control-action"><label>&nbsp;</label><button id="load-history">Consultar histórico</button></div>
-    </div>
-    <div id="custom-period" class="history-custom hidden"><div class="control"><label for="custom-start">Início (horário local)</label><input type="datetime-local" id="custom-start" /></div><div class="control"><label for="custom-stop">Fim (horário local)</label><input type="datetime-local" id="custom-stop" /></div></div>
-    <p class="fine" id="query-detail">Selecione um período e consulte o banco.</p>
-  </section>
-  <section class="history-overview" aria-label="Resumo da consulta">
-    <div class="kpi"><span>PONTOS CONSULTADOS</span><strong id="hist-count">—</strong><small>registros amostrados</small></div>
-    <div class="kpi"><span>SESSÕES IDENTIFICADAS</span><strong id="hist-sessions">—</strong><small>novas + antigas</small></div>
-    <div class="kpi"><span>PERÍODO MOSTRADO</span><strong id="hist-window">—</strong><small id="hist-range">aguardando consulta</small></div>
-  </section>
-  <section class="panel history-panel">
-   <div class="section-head"><div><h2>Comparar sessões</h2><p>Os gráficos são alinhados pelo tempo decorrido desde o início de cada sessão.</p></div><span class="pill">A / B</span></div>
-   <div class="history-compare-controls">
-    <div class="control"><label for="session-a">Sessão A</label><select id="session-a"><option value="">Consulte o histórico...</option></select></div>
-    <div class="control"><label for="session-b">Sessão B (opcional)</label><select id="session-b"><option value="">Sem comparação</option></select></div>
-   </div>
-   <div class="history-legend"><span><i class="legend-a"></i>Sessão A</span><span><i class="legend-b"></i>Sessão B</span><span id="axis-label" class="history-axis">Tempo decorrido · valor</span></div>
-   <div class="chart-interactive"><svg id="historic-chart" viewBox="0 0 940 290" role="img" aria-label="Gráfico histórico comparativo"></svg><div id="chart-tooltip" class="chart-tooltip hidden"></div></div>
-   <p class="fine" id="history-note">Selecione uma sessão para ver seus pontos.</p>
-  </section>
-  <section class="history-stats-grid" aria-label="Estatísticas">
-    <div class="panel stat-panel"><div class="stat-title"><i class="legend-a"></i><h2>Sessão A</h2></div><p class="stat-sub" id="summary-a">Nenhuma sessão selecionada.</p><div id="stats-a" class="stat-values"></div></div>
-    <div class="panel stat-panel"><div class="stat-title"><i class="legend-b"></i><h2>Sessão B</h2></div><p class="stat-sub" id="summary-b">Nenhuma sessão selecionada.</p><div id="stats-b" class="stat-values"></div></div>
-  </section>
-  <section class="panel history-panel">
-    <div class="section-head"><div><h2>Dados consultados</h2><p>Exibindo até 80 linhas. O CSV exporta todos os pontos retornados da consulta.</p></div><button class="export-btn secondary" id="export-csv">Exportar CSV</button></div>
-    <div class="history-table-scroll"><table class="history-table"><thead><tr><th>Horário</th><th>Sessão</th><th>Origem</th><th id="table-metric">Valor</th></tr></thead><tbody id="history-tbody"><tr><td colspan="4" class="empty-row">Aguardando consulta ao InfluxDB...</td></tr></tbody></table></div>
-  </section>
-  <footer>ECOTAM • Sprint 13 • Dados históricos do InfluxDB • Sessões antigas podem ser inferidas • Uso local</footer>
- </div>
+ </section>
+ <div id="history-status" class="banner" role="status">Verificando a conexão com o InfluxDB…</div>
+
+ <section class="panel hud" aria-labelledby="h-filters">
+  <header class="panel__head"><div><h2 id="h-filters">Explorar registros</h2><p>Escolha o período e a variável.</p></div></header>
+  <div class="filters">
+   <div class="control"><label for="period">Período</label><select id="period"><option value="15m">Últimos 15 min</option><option value="1h">Última 1 hora</option><option value="6h" selected>Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="7d">Últimos 7 dias</option><option value="30d">Últimos 30 dias</option><option value="custom">Personalizado</option></select></div>
+   <div class="control"><label for="metric">Variável</label><select id="metric"><option value="altitude_m">Altitude BME280 (m)</option><option value="gps_altitude_m">Altitude GPS (m)</option><option value="humidity_pct">Umidade relativa (%)</option><option value="latitude">Latitude (graus)</option><option value="longitude">Longitude (graus)</option><option value="satellites">Satélites (número)</option><option value="pressure_pa">Pressão (Pa)</option><option value="temperature_c">Temperatura (°C)</option><option value="battery_v">Bateria (V)</option><option value="accel_x">Aceleração X</option><option value="accel_y">Aceleração Y</option><option value="accel_z">Aceleração Z</option><option value="gyro_x">Giroscópio X</option><option value="gyro_y">Giroscópio Y</option><option value="gyro_z">Giroscópio Z</option></select></div>
+   <div class="control control-action"><button type="button" id="load-history" class="btn">Consultar histórico</button></div>
+  </div>
+  <div id="custom-period" class="custom-range hidden"><div class="control"><label for="custom-start">Início (horário local)</label><input type="datetime-local" id="custom-start" name="custom-start" /></div><div class="control"><label for="custom-stop">Fim (horário local)</label><input type="datetime-local" id="custom-stop" name="custom-stop" /></div></div>
+  <p class="fine" id="query-detail">Selecione um período e consulte o banco.</p>
+ </section>
+
+ <section class="panel readouts readouts--hist" aria-label="Resumo da consulta">
+  <div class="readout tone-blue"><span class="readout__label">Pontos consultados</span><strong class="readout__value" id="hist-count">—</strong><span class="readout__note">registros amostrados</span></div>
+  <div class="readout tone-teal"><span class="readout__label">Sessões identificadas</span><strong class="readout__value" id="hist-sessions">—</strong><span class="readout__note">novas + antigas</span></div>
+  <div class="readout tone-olive"><span class="readout__label">Resolução</span><strong class="readout__value" id="hist-window">—</strong><span class="readout__note" id="hist-range">aguardando consulta</span></div>
+ </section>
+
+ <section class="panel hud history-chart section-tight" aria-labelledby="h-compare">
+  <header class="panel__head"><div><h2 id="h-compare" class="deck-title">Comparar sessões</h2><p>Curvas alinhadas pelo tempo decorrido desde o início de cada sessão.</p></div></header>
+  <div class="compare-controls">
+   <div class="control"><label for="session-a">Sessão A</label><select id="session-a"><option value="">Consulte o histórico primeiro</option></select></div>
+   <div class="control"><label for="session-b">Sessão B (opcional)</label><select id="session-b"><option value="">Sem comparação</option></select></div>
+  </div>
+  <div class="legend"><span><i class="legend-a"></i>Sessão A</span><span><i class="legend-b"></i>Sessão B</span><span id="axis-label" class="history-axis">Tempo decorrido · valor</span></div>
+  <div class="chart-frame"><svg id="historic-chart" class="chart" viewBox="0 0 940 300" role="img" aria-label="Gráfico histórico comparativo"></svg><div id="chart-tooltip" class="chart-tooltip hidden"></div></div>
+  <p class="fine" id="history-note">Selecione uma sessão para ver seus pontos.</p>
+ </section>
+
+ <section class="layout-2" aria-label="Estatísticas">
+  <div class="panel"><div class="stat-title"><i class="legend-a"></i><h2>Sessão A</h2></div><p class="stat-sub" id="summary-a">Nenhuma sessão selecionada.</p><div id="stats-a" class="stat-values"></div></div>
+  <div class="panel"><div class="stat-title"><i class="legend-b"></i><h2>Sessão B</h2></div><p class="stat-sub" id="summary-b">Nenhuma sessão selecionada.</p><div id="stats-b" class="stat-values"></div></div>
+ </section>
+
+ <section class="panel section-tight" aria-labelledby="h-table">
+  <header class="panel__head"><div><h2 id="h-table">Dados consultados</h2><p>Exibindo até 80 linhas. O CSV exporta todos os pontos retornados da consulta.</p></div><button type="button" class="btn btn--ghost" id="export-csv">Exportar CSV</button></header>
+  <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Horário</th><th scope="col">Sessão</th><th scope="col">Origem</th><th scope="col" id="table-metric">Valor</th></tr></thead><tbody id="history-tbody"><tr><td colspan="4" class="empty-row">Nenhuma consulta feita. Escolha o período e clique em Consultar histórico.</td></tr></tbody></table></div>
+ </section>
+</main>
+<footer class="app-footer"><span class="app-footer__brand"><img src="/assets/brand/logos/05-simbolo.svg" alt="" width="40" height="40"><span><b>CANIDÉ</b> · Telemetria &amp; rastreamento<em class="app-footer__slogan">Cabe outro olhar.</em></span></span><span>Dados históricos do InfluxDB · sessões antigas podem ser inferidas · uso local</span></footer>
+</div>
+</div>
+<nav class="tabbar" data-shell="tabbar" aria-label="Navegação principal"></nav>
 </body>
 </html>

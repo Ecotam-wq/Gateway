@@ -1,61 +1,42 @@
 'use strict';
+/* CANIDÉ · Histórico: usa EcoUI.LineChart (definido em /dashboard.js, carregado antes). */
 const $ = id => document.getElementById(id);
 const META = {
- altitude_m:['Altitude BME280','m'], pressure_pa:['Pressão','Pa'], temperature_c:['Temperatura','°C'],
- humidity_pct:['Umidade relativa','% UR'], gps_altitude_m:['Altitude GPS','m'], latitude:['Latitude','graus'], longitude:['Longitude','graus'], satellites:['Satélites','nº'],
- battery_v:['Bateria','V'], accel_x:['Aceleração X','m/s²'], accel_y:['Aceleração Y','m/s²'],
- accel_z:['Aceleração Z','m/s²'], gyro_x:['Giroscópio X','unid. simulada'],
- gyro_y:['Giroscópio Y','unid. simulada'], gyro_z:['Giroscópio Z','unid. simulada']
+ altitude_m:['Altitude BME280','m',2], pressure_pa:['Pressão','Pa',0], temperature_c:['Temperatura','°C',2],
+ humidity_pct:['Umidade relativa','% UR',2], gps_altitude_m:['Altitude GPS','m',2], latitude:['Latitude','graus',7], longitude:['Longitude','graus',7], satellites:['Satélites','nº',0],
+ battery_v:['Bateria','V',2], accel_x:['Aceleração X','m/s²',3], accel_y:['Aceleração Y','m/s²',3],
+ accel_z:['Aceleração Z','m/s²',3], gyro_x:['Giroscópio X','unid. simulada',3],
+ gyro_y:['Giroscópio Y','unid. simulada',3], gyro_z:['Giroscópio Z','unid. simulada',3]
 };
-const COLORS = ['#42dbbc','#76a8ff'];
 const fnum = (v,d=2) => v===null || v===undefined || !Number.isFinite(Number(v)) ? '—' : Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmtDate = iso => new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const fmtElapsed = s => {s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60;return h?`${h}h${String(m).padStart(2,'0')}`:m?`${m}:${String(r).padStart(2,'0')}`:`${r} s`;};
 let history = null;
-let activeSeries = [];
-function banner(message,error=false,ok=false){const node=$('history-status');node.textContent=message;node.classList.toggle('error',error);node.classList.toggle('ok',ok);}
+const chart = new EcoUI.LineChart($('historic-chart'), {
+ series:[{name:'Sessão A',tone:'blue'},{name:'Sessão B',tone:'orange'}],
+ tooltip:$('chart-tooltip'), pad:{l:84,r:20,t:28,b:32},
+ empty:'Sem pontos para a variável e sessão selecionadas.',
+ head:q=>`T+ ${fmtElapsed(q.x)} desde o início da sessão`,
+ detail:q=>q.time?fmtDate(q.time):''
+});
+function banner(message,error=false,ok=false,busy=false){const node=$('history-status');node.textContent=message;node.classList.toggle('error',error);node.classList.toggle('ok',ok);node.classList.toggle('is-busy',busy);}
+function linkState(online,text){$('dot').classList.toggle('on',online);document.body.classList.toggle('is-offline',!online);$('mode-label').textContent=text;}
 async function post(endpoint,payload){const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);return data;}
-function metricInfo(){return META[$('metric').value]||['Medição',''];}
-function emptyGraph(message){const svg=$('historic-chart');svg.innerHTML='';const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x','50%');t.setAttribute('y','50%');t.setAttribute('text-anchor','middle');t.setAttribute('fill','#9aadc0');t.setAttribute('font-size','14');t.textContent=message;svg.appendChild(t);$('chart-tooltip').classList.add('hidden');}
+function metricInfo(){return META[$('metric').value]||['Medição','',2];}
+function emptyGraph(message){chart.update({series:[],empty:message});}
 function escapeCsv(value){let out=String(value??'');if(/^[=+@\-\t\r]/.test(out) && !/^\-?\d+(?:\.\d+)?$/.test(out))out="'"+out;return '"'+out.replaceAll('"','""')+'"';}
 function getSelection(id){return $('session-'+id).value;}
 function getSessionRows(sessionKey,metric){if(!history||!sessionKey)return [];const points=history.rows.filter(p=>p.session_key===sessionKey&&Number.isFinite(p[metric]));if(!points.length)return [];const start=Date.parse(points[0].time);return points.map(p=>({time:p.time,elapsed:(Date.parse(p.time)-start)/1000,value:p[metric],source:p.source,device:p.device}));}
-function makeSvg(tag,attrs,parent){const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [name,value] of Object.entries(attrs||{}))node.setAttribute(name,String(value));if(parent)parent.appendChild(node);return node;}
-function addText(svg,x,y,content,anchor='start',size=11){const t=makeSvg('text',{x,y,fill:'#90aab9','text-anchor':anchor,'font-size':size},svg);t.textContent=content;}
 function renderChart(){
- const svg=$('historic-chart'),metric=$('metric').value,[name,unit]=metricInfo();svg.innerHTML='';activeSeries=[];
- const ids=[getSelection('a'),getSelection('b')];
- ids.forEach((id,i)=>{const points=getSessionRows(id,metric);if(points.length)activeSeries.push({id,points,color:COLORS[i],slot:i});});
- if(!activeSeries.length){emptyGraph('Sem pontos para a variável e sessão selecionadas.');return;}
- const all=activeSeries.flatMap(s=>s.points),vals=all.map(p=>p.value),maxX=Math.max(1,...all.map(p=>p.elapsed));
- let minY=Math.min(...vals),maxY=Math.max(...vals);const spread=Math.max(.001,maxY-minY);minY-=spread*.13;maxY+=spread*.13;
- const W=940,H=300,L=88,R=18,T=24,B=46,plotW=W-L-R,plotH=H-T-B;
- svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
- const x=v=>L+v/maxX*plotW,y=v=>T+(maxY-v)/(maxY-minY)*plotH;
- for(let i=0;i<=4;i++){
-  const gy=T+i*plotH/4;
-  makeSvg('line',{x1:L,x2:W-R,y1:gy,y2:gy,stroke:'#254055','stroke-dasharray':'4 5'},svg);
-  addText(svg,L-10,gy+4,fnum(maxY-i*(maxY-minY)/4,maxY-maxY/2>10000?0:2),'end');
- }
- for(let i=0;i<=5;i++){
-  const sx=L+i*plotW/5;makeSvg('line',{x1:sx,x2:sx,y1:H-B,y2:H-B+5,stroke:'#446274'},svg);
-  addText(svg,sx,H-18,fnum(i*maxX/5,maxX<100?0:0)+' s','middle');
- }
- activeSeries.forEach(series=>{
-  const d=series.points.map((p,i)=>`${i?'L':'M'}${x(p.elapsed).toFixed(2)} ${y(p.value).toFixed(2)}`).join(' ');
-  makeSvg('path',{d,fill:'none',stroke:series.color,'stroke-width':2.5,'stroke-linejoin':'round','stroke-linecap':'round'},svg);
-  const last=series.points.at(-1);makeSvg('circle',{cx:x(last.elapsed),cy:y(last.value),r:4,fill:series.color},svg);
- });
- $('axis-label').textContent=`Tempo decorrido (s) · ${name} (${unit})`;
- svg.onpointermove=e=>{
-  const rect=svg.getBoundingClientRect();const px=(e.clientX-rect.left)/rect.width*W;const elapsed=Math.max(0,Math.min(maxX,(px-L)/plotW*maxX));
-  const near=activeSeries.map(series=>{
-   const points=series.points;let lo=0,hi=points.length-1;while(lo<hi){const mid=Math.floor((lo+hi)/2);if(points[mid].elapsed<elapsed)lo=mid+1;else hi=mid;}const prev=points[Math.max(0,lo-1)],p=Math.abs(prev.elapsed-elapsed)<Math.abs(points[lo].elapsed-elapsed)?prev:points[lo];return {series,p};
-  });
-  const tooltip=$('chart-tooltip');tooltip.replaceChildren();
-  for(const {series,p} of near){const line=document.createElement('div');line.style.color=series.color;line.textContent=`${series.slot?'B':'A'} · ${fnum(p.value,3)} ${unit} · ${fnum(p.elapsed,0)} s`;tooltip.appendChild(line);}
-  tooltip.classList.remove('hidden');tooltip.style.left=Math.max(6,Math.min(rect.width-205,e.clientX-rect.left+12))+'px';tooltip.style.top=Math.max(4,e.clientY-rect.top-46)+'px';
- };
- svg.onpointerleave=()=> $('chart-tooltip').classList.add('hidden');
+ const metric=$('metric').value,[name,unit,decimals]=metricInfo();
+ const sets=[getSelection('a'),getSelection('b')].map(id=>getSessionRows(id,metric));
+ if(!sets.some(s=>s.length)){emptyGraph('Sem pontos para a variável e sessão selecionadas.');$('axis-label').textContent=`Tempo decorrido · ${name} (${unit})`;return;}
+ const maxX=Math.max(1,...sets.flat().map(p=>p.elapsed));
+ const step=EcoUI.niceStep(maxX,5),xTicks=[];for(let v=0;v<=maxX+1e-9&&xTicks.length<8;v+=step)xTicks.push({x:v,label:fmtElapsed(v)});
+ const vals=sets.flat().map(p=>p.value);let lo=Math.min(...vals),hi=Math.max(...vals);const spread=Math.max(.001,hi-lo);lo-=spread*.13;hi+=spread*.13;
+ chart.update({series:sets.map(s=>s.map(p=>({x:p.elapsed,y:p.value,t:Date.parse(p.time),time:p.time}))),x0:0,x1:maxX,xTicks,yDomain:[lo,hi],unit,decimals});
+ $('axis-label').textContent=`Tempo decorrido · ${name} (${unit})`;
+ $('historic-chart').setAttribute('aria-label',`${name} por tempo decorrido: ${sets.map((s,i)=>s.length?`sessão ${i?'B':'A'} com ${s.length} pontos`:'').filter(Boolean).join(', ')}. Use as setas para inspecionar.`);
 }
 function renderStats(letter){
  const metric=$('metric').value,points=getSessionRows(getSelection(letter),metric),container=$('stats-'+letter),subtitle=$('summary-'+letter);
@@ -82,22 +63,23 @@ function populateSelects(){const choices=history.sessions;
  }
 }
 function renderOverview(){if(!history)return;$('hist-count').textContent=history.rows.length.toLocaleString('pt-BR');$('hist-sessions').textContent=String(history.sessions.length);$('hist-window').textContent=history.resolution_s===1?'1 segundo':`${history.resolution_s}s`; $('hist-range').textContent=`${fmtDate(history.start)} a ${fmtDate(history.stop)}`;const mode=history.downsampled?'pontos agregados':'dados em resolução de 1s';$('query-detail').textContent=`Consultados ${history.rows.length} pontos (${mode}) no bucket configurado. A origem real ou simulada depende da coluna source.`;}
-async function queryHistory(){const button=$('load-history');button.disabled=true;button.textContent='Consultando...';banner('Consultando dados históricos no InfluxDB...');
+async function queryHistory(){const button=$('load-history');button.disabled=true;button.textContent='Consultando…';banner('Consultando dados históricos no InfluxDB…',false,false,true);
  try{
   const payload={period:$('period').value};if(payload.period==='custom'){const a=$('custom-start').value,b=$('custom-stop').value;if(!a||!b)throw new Error('Preencha as duas datas do período personalizado.');payload.start=new Date(a).toISOString();payload.stop=new Date(b).toISOString();}
   const result=await post('/api/history',payload);history=result;populateSelects();renderOverview();redraw();
-  banner(result.rows.length?`Consulta concluída: ${result.rows.length} pontos em ${result.sessions.length} sessão(ões).`:'Consulta concluída, mas não há dados nesse intervalo. Tente 24 horas ou 7 dias.',false,true);
+  banner(result.rows.length?`Consulta concluída: ${result.rows.length} pontos em ${result.sessions.length} ${result.sessions.length === 1 ? 'sessão' : 'sessões'}.`:'Não há dados nesse intervalo. Tente 24 horas ou 7 dias.',false,true);
  }catch(error){banner(error.message,true);$('query-detail').textContent='Se o banco foi reiniciado, conecte novamente em Tempo real.';}
  finally{button.disabled=false;button.textContent='Consultar histórico';}
 }
 function exportCsv(){if(!history||!history.rows.length){banner('Nenhum dado disponível para exportar. Consulte primeiro.',true);return;}
  const ids=[getSelection('a'),getSelection('b')].filter(Boolean),rows=history.rows.filter(x=>ids.includes(x.session_key));if(!rows.length){banner('Selecione pelo menos uma sessão.',true);return;}
  const headers=['time','session_key','source','device',...history.fields];const data=[headers.join(',')];for(const row of rows)data.push(headers.map(h=>escapeCsv(row[h])).join(','));
- const blob=new Blob(['\ufeff',data.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`ECOTAM_historico_${new Date().toISOString().replaceAll(':','-').slice(0,19)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);banner(`CSV gerado com ${rows.length} pontos consultados das sessões selecionadas.`,false,true);
+ const blob=new Blob(['﻿',data.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`CANIDE_historico_${new Date().toISOString().replaceAll(':','-').slice(0,19)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);banner(`CSV gerado com ${rows.length} pontos consultados das sessões selecionadas.`,false,true);
 }
 async function startup(){const now=new Date(),oneHour=new Date(now.getTime()-3600000);const local=v=>{const date=new Date(v.getTime()-v.getTimezoneOffset()*60000);return date.toISOString().slice(0,16)};$('custom-start').value=local(oneHour);$('custom-stop').value=local(now);
- try{const s=await (await fetch('/api/status',{cache:'no-store'})).json();if(s.influx_configured){banner(`Conectado ao InfluxDB · ${s.influx_org} / ${s.influx_bucket}`,false,true);await queryHistory();}else banner('InfluxDB não conectado. Abra Tempo real, conecte usando sua organização, bucket e token, e retorne aqui.',true);}
- catch(error){banner('Não foi possível consultar o gateway: '+error.message,true);}
+ emptyGraph('Consulte o histórico para ver as sessões.');
+ try{const s=await (await fetch('/api/status',{cache:'no-store'})).json();linkState(true,s.influx_configured?'INFLUXDB • '+s.influx_bucket:'GATEWAY ONLINE');if(s.influx_configured){banner(`Conectado ao InfluxDB · ${s.influx_org} / ${s.influx_bucket}`,false,true);await queryHistory();}else banner('InfluxDB não conectado. Abra Tempo real, conecte usando sua organização, bucket e token, e retorne aqui.',true);}
+ catch(error){linkState(false,'Gateway desconectado');banner('Não foi possível consultar o gateway: '+error.message,true);}
 }
 $('period').addEventListener('change',()=> $('custom-period').classList.toggle('hidden',$('period').value!=='custom'));
 $('load-history').addEventListener('click',queryHistory);
